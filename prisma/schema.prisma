@@ -1,0 +1,184 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+//
+// ENUMS
+//
+
+enum IncidentStatus {
+  New
+  InReview
+  Investigation
+  Resolved
+  Closed
+}
+
+enum ReporterType {
+  Anonymous
+  Confidential
+}
+
+enum UserRole {
+  Admin
+  Handler
+}
+
+enum UserStatus {
+  Active
+  Inactive
+}
+
+enum AttachmentUploader {
+  Reporter
+  Handler
+}
+
+enum SenderType {
+  Reporter
+  Handler
+}
+
+//
+// MODELS
+//
+
+model Company {
+  id                String   @id @default(uuid()) @db.Uuid
+  name              String?
+  reportingLinkSlug String?  @unique
+  createdAt         DateTime @default(now())
+
+  users          User[]
+  incidents      Incident[]
+  categories     Category[]
+  reportingPages ReportingPage[]
+}
+
+model User {
+  id        String     @id @default(uuid()) @db.Uuid
+  companyId String     @db.Uuid
+  name      String?
+  email     String     @unique
+  password  String?
+  role      UserRole   @default(Handler)
+  status    UserStatus @default(Inactive)
+  createdAt DateTime   @default(now())
+
+  company            Company           @relation(fields: [companyId], references: [id])
+  assignedIncidents  IncidentHandler[]
+  messages           Message[]
+}
+
+model Incident {
+  id                String         @id @default(uuid()) @db.Uuid
+  companyId         String         @db.Uuid
+  incidentIdDisplay String         @unique
+  category          String
+  description       String
+  location          String
+  involvedPeople    String?
+  incidentDate      DateTime
+  reporterType      ReporterType
+  status            IncidentStatus
+  secretCodeHash    String
+  deadlineAt        DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  closedAt          DateTime?
+  duration          String?
+
+  company     Company          @relation(fields: [companyId], references: [id])
+  reporter    Reporter?
+  handlers    IncidentHandler[]
+  attachments Attachment[]
+  messages    Message[]
+  secretCodes SecretCode[]
+}
+
+model Reporter {
+  id         String   @id @default(uuid()) @db.Uuid
+  incidentId String   @unique @db.Uuid
+  name       String?
+  email      String?
+  phone      String?
+  createdAt  DateTime @default(now())
+
+  incident   Incident @relation(fields: [incidentId], references: [id])
+}
+
+model IncidentHandler {
+  id         String   @id @default(uuid()) @db.Uuid
+  incidentId String   @db.Uuid
+  handlerId  String   @db.Uuid
+  assignedAt DateTime @default(now())
+
+  incident   Incident @relation(fields: [incidentId], references: [id])
+  handler    User     @relation(fields: [handlerId], references: [id])
+
+  @@unique([incidentId, handlerId])
+}
+
+model Attachment {
+  id         String              @id @default(uuid()) @db.Uuid
+  incidentId String              @db.Uuid
+  uploadedBy AttachmentUploader
+  fileName   String
+  filePath   String
+  createdAt  DateTime            @default(now())
+
+  incident   Incident            @relation(fields: [incidentId], references: [id])
+}
+
+model SecretCode {
+  id             String   @id @default(uuid()) @db.Uuid
+  incidentId     String   @db.Uuid
+  secretCodeHash String
+  createdAt      DateTime @default(now())
+
+  incident       Incident @relation(fields: [incidentId], references: [id])
+}
+
+model Category {
+  id           String   @id @default(uuid()) @db.Uuid
+  companyId    String   @db.Uuid
+  categoryName String
+  createdAt    DateTime @default(now())
+
+  company      Company  @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, categoryName])
+}
+
+model ReportingPage {
+  id               String   @id @default(uuid()) @db.Uuid
+  companyId        String   @db.Uuid
+  title            String?
+  introContent     String?
+  policyUrl        String?
+  reportingPageUrl String?
+
+  company          Company  @relation(fields: [companyId], references: [id])
+}
+
+model Message {
+  id         String     @id @default(uuid()) @db.Uuid
+  incidentId String     @db.Uuid
+  senderType SenderType
+  senderId   String     @db.Uuid
+  content    String
+  createdAt  DateTime   @default(now())
+
+  incident   Incident   @relation(fields: [incidentId], references: [id])
+  sender     User       @relation(fields: [senderId], references: [id])
+}
