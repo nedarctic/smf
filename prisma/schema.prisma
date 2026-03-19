@@ -63,6 +63,8 @@ model Company {
   incidents      Incident[]
   categories     Category[]
   reportingPages ReportingPage[]
+
+  @@map("companies")
 }
 
 model User {
@@ -78,6 +80,8 @@ model User {
   company            Company           @relation(fields: [companyId], references: [id])
   assignedIncidents  IncidentHandler[]
   messages           Message[]
+
+  @@map("users")
 }
 
 model Incident {
@@ -104,6 +108,8 @@ model Incident {
   attachments Attachment[]
   messages    Message[]
   secretCodes SecretCode[]
+
+  @@map("incidents")
 }
 
 model Reporter {
@@ -115,6 +121,8 @@ model Reporter {
   createdAt  DateTime @default(now())
 
   incident   Incident @relation(fields: [incidentId], references: [id])
+
+  @@map("reporters")
 }
 
 model IncidentHandler {
@@ -127,6 +135,8 @@ model IncidentHandler {
   handler    User     @relation(fields: [handlerId], references: [id])
 
   @@unique([incidentId, handlerId])
+
+  @@map("incident_handlers")
 }
 
 model Attachment {
@@ -138,6 +148,8 @@ model Attachment {
   createdAt  DateTime            @default(now())
 
   incident   Incident            @relation(fields: [incidentId], references: [id])
+
+  @@map("attachments")
 }
 
 model SecretCode {
@@ -147,6 +159,8 @@ model SecretCode {
   createdAt      DateTime @default(now())
 
   incident       Incident @relation(fields: [incidentId], references: [id])
+
+  @@map("secret_codes")
 }
 
 model Category {
@@ -158,6 +172,8 @@ model Category {
   company      Company  @relation(fields: [companyId], references: [id])
 
   @@unique([companyId, categoryName])
+
+  @@map("categories")
 }
 
 model ReportingPage {
@@ -169,6 +185,8 @@ model ReportingPage {
   reportingPageUrl String?
 
   company          Company  @relation(fields: [companyId], references: [id])
+
+  @@map("reporting_pages")
 }
 
 model Message {
@@ -181,4 +199,6 @@ model Message {
 
   incident   Incident   @relation(fields: [incidentId], references: [id])
   sender     User       @relation(fields: [senderId], references: [id])
+
+  @@map("messages")
 }

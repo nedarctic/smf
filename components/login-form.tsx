@@ -14,12 +14,52 @@ import {
   FieldLabel,
   FieldSeparator,
 } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { signIn } from "next-auth/react";
+import React from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useTransition } from "react";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  const [error, setError] = useState<string>();
+  const [email, setEmail] = useState<string>();
+  const [password, setPassword] = useState<string>();
+
+  const loginHandler = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+
+    startTransition(async () => {
+
+      setError("");
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+        callbackUrl: "/dashboard",
+      });
+
+      console.log('Login res:', res);
+
+      if (res?.error == "CredentialsSignin") {
+        console.log('res:', res)
+        setError("Wrong email or password");
+        return;
+      }
+
+      router.push("/dashboard");
+    });
+
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -30,11 +70,12 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={loginHandler}>
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
+                  onChange={(e) => setEmail(e.target.value)}
                   id="email"
                   type="email"
                   placeholder="m@example.com"
@@ -44,17 +85,13 @@ export function LoginForm({
               <Field>
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <a
-                    href="#"
-                    className="ml-auto text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
+                  
                 </div>
-                <Input id="password" type="password" required />
+                <Input onChange={e => setPassword(e.target.value)} id="password" type="password" required />
               </Field>
+              {error && <p className="text-red-600 font-normal text-sm">{error}</p>}
               <Field>
-                <Button type="submit">Login</Button>
+                <Button type="submit">{isPending ? "Signing in..." : "Sign in"}</Button>
               </Field>
             </FieldGroup>
           </form>

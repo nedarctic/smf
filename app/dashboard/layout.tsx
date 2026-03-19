@@ -6,7 +6,22 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
 import React from "react"
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+import { authOptions } from "../api/auth/[...nextauth]/route"
+import { getServerSession } from "next-auth"
+
+
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+  const session = await getServerSession(authOptions);
+  console.log("Session at the dashboard layout:", session);
+
+  const {name, email} = session?.user;
+
+  const user = {
+    name,
+    email
+  }
+
   return (
     <TooltipProvider>
       <SidebarProvider
@@ -17,7 +32,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           } as React.CSSProperties
         }
       >
-        <AppSidebar variant="inset" />
+        <AppSidebar user={user} variant="inset" />
         <SidebarInset>
           <SiteHeader />
           {children}
