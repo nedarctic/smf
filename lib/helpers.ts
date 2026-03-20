@@ -2,30 +2,170 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "./prisma";
 
-export async function getCompanyId() {
-  try {
-    // 1. get user id from session
-    const session = await getServerSession(authOptions);
-    const userId = session?.user.id;
 
-    console.log("user id:", userId);
+function getDateRanges(days: number) {
+    const now = new Date()
 
-    // 2. get company user object and destructure company id
-    const user = await prisma.user.findUnique({
-        where: {id: userId}
+    const currentStart = new Date(now)
+    currentStart.setDate(now.getDate() - days)
+
+    const previousStart = new Date(currentStart)
+    previousStart.setDate(currentStart.getDate() - days)
+
+    return { now, currentStart, previousStart }
+}
+
+export async function getIncidents(
+    companyId: string,
+    startDate?: Date,
+    endDate?: Date
+) {
+    return prisma.incident.findMany({
+        where: {
+            companyId,
+            ...(startDate || endDate
+                ? {
+                    createdAt: {
+                        ...(startDate ? { gte: startDate } : {}),
+                        ...(endDate ? { lt: endDate } : {}),
+                    },
+                }
+                : {}),
+        },
+    })
+}
+
+
+export async function totalIncidentsTrend(companyId: string, days = 30) {
+    const { now, currentStart, previousStart } = getDateRanges(days)
+
+    const current = await prisma.incident.count({
+        where: {
+            companyId,
+            createdAt: { gte: currentStart, lt: now },
+        },
     })
 
-    const { companyId } = user!;
+    const previous = await prisma.incident.count({
+        where: {
+            companyId,
+            createdAt: { gte: previousStart, lt: currentStart },
+        },
+    })
 
-    console.log("company id", companyId)
+    return { current, previous }
+}
 
-    return { success: true, data: companyId };
-  } catch (error) {
-    return { error: error instanceof Error ? error.message.toString() : "Unknown error" }
-  }
+export async function totalOpenIncidentsTrend(companyId: string, days = 30) {
+    const { currentStart, previousStart, now } = getDateRanges(days)
+
+    const [current, previous] = await Promise.all([
+        prisma.incident.count({
+            where: {
+                companyId,
+                status: { not: "Closed" },
+                createdAt: { gte: currentStart, lt: now },
+            },
+        }),
+        prisma.incident.count({
+            where: {
+                companyId,
+                status: { not: "Closed" },
+                createdAt: { gte: previousStart, lt: currentStart },
+            },
+        }),
+    ])
+
+    return { current, previous }
+}
+
+export async function slaComplianceTrend(companyId: string, days = 30) {
+    const { now, currentStart, previousStart } = getDateRanges(days)
+
+    async function compute(start: Date, end: Date) {
+        const incidents = await prisma.incident.findMany({
+            where: {
+                companyId,
+                createdAt: { gte: start, lt: end },
+            },
+        })
+
+        const closed = incidents.filter(i => i.closedAt)
+
+        if (closed.length === 0) return 0
+
+        const withinSLA = closed.filter(i => {
+            const deadline = new Date(i.deadlineAt!).getTime()
+            const closedAt = new Date(i.closedAt!).getTime()
+            return closedAt <= deadline
+        }).length
+
+        return Math.round((withinSLA / incidents.length) * 100)
+    }
+
+    const current = await compute(currentStart, now)
+    const previous = await compute(previousStart, currentStart)
+
+    return { current, previous }
+}
+
+export async function avgResolutionTimeTrend(companyId: string, days = 30) {
+    const { now, currentStart, previousStart } = getDateRanges(days)
+
+    async function compute(start: Date, end: Date) {
+        const incidents = await prisma.incident.findMany({
+            where: {
+                companyId,
+                createdAt: { gte: start, lt: end },
+                closedAt: { not: null },
+            },
+        })
+
+        if (incidents.length === 0) return 0
+
+        const total = incidents.reduce((sum, i) => {
+            const created = new Date(i.createdAt).getTime()
+            const closed = new Date(i.closedAt!).getTime()
+            return sum + (closed - created)
+        }, 0)
+
+        const avgMs = total / incidents.length
+
+        return Math.round(avgMs / (1000 * 60 * 60 * 24))
+    }
+
+    const current = await compute(currentStart, now)
+    const previous = await compute(previousStart, currentStart)
+
+    return { current, previous }
+}
+
+
+export async function getCompanyId() {
+    try {
+        // 1. get user id from session
+        const session = await getServerSession(authOptions);
+        const userId = session?.user.id;
+
+        console.log("user id:", userId);
+
+        // 2. get company user object and destructure company id
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        })
+
+        const { companyId } = user!;
+
+        console.log("company id", companyId)
+
+        return { success: true, data: companyId };
+    } catch (error) {
+        return { error: error instanceof Error ? error.message.toString() : "Unknown error" }
+    }
 }
 
 export async function totalIncidents(companyId: string) {
+
     const data = await prisma.incident.findMany({
         where: { companyId: companyId }
     });
@@ -96,7 +236,7 @@ export async function unassignedIncidents(companyId: string) {
     });
 
     return Array.from(data.filter(incident => {
-        return incident.handlers.length === null;
+        return incident.handlers.length === 0;
     }));
 }
 
@@ -109,7 +249,7 @@ export async function incidentsDueSoon(companyId: string, days: number) {
     return Array.from(data.filter(({ deadlineAt }) => {
         const deadline = new Date(deadlineAt!).getTime();
         const now = Date.now();
-        const limit = Date.now() * days * 24 * 60 * 60 * 1000;
+        const limit = now + days * 24 * 60 * 60 * 1000;
         return deadline > now && limit > deadline;
     }));
 }
@@ -125,27 +265,69 @@ export async function overdueIncidents(companyId: string) {
 }
 
 export async function avgResolutionTime(companyId: string): Promise<number> {
-
   const data = await prisma.incident.findMany({
-        where: { companyId: companyId }
-    });
+    where: { companyId },
+  })
 
-  // get closed incidents
-  const closed = data.filter(({ closedAt }) => closedAt !== null);
+  const closed = data.filter((i) => i.closedAt)
 
-  if (closed.length === 0) return 0;
+  if (closed.length === 0) return 0
 
-  // get time taken to resolve all incidents
-  const total_resoulution_time = closed.reduce((sum, incident) => {
-    const created = new Date(incident.createdAt).getTime();
-    const closed = new Date(incident.closedAt!).getTime();
-    return sum + (closed - created);
-  }, 0);
+  const totalResolutionTimeMs = closed.reduce((sum, incident) => {
+    const start = new Date(incident.incidentDate).getTime()
+    const end = new Date(incident.closedAt!).getTime()
 
-  // divide total resolution time by total resolved cases
-  const total_avg_microsecs = total_resoulution_time / closed.length;
+    if (end < start) return sum // guard
 
-  // convert to days and round
-  return Math.round(total_avg_microsecs / (1000 * 60 * 60 * 24));
+    return sum + (end - start)
+  }, 0)
 
+  const avgMs = totalResolutionTimeMs / closed.length
+  const avgDays = avgMs / (1000 * 60 * 60 * 24)
+
+  return Math.round(avgDays)
+}
+
+export function getTrend(current: number, previous: number, invert = false) {
+    if (previous === 0) {
+        return { percent: "0.0", isUp: true }
+    }
+
+    let change = ((current - previous) / previous) * 100
+
+    if (invert) change = -change
+
+    return {
+        percent: Math.abs(change).toFixed(1), // always string
+        isUp: change >= 0,
+    }
+}
+
+export function getFooterText(
+    label: string,
+    trend: { isUp: boolean; percent: string },
+    options?: { invert?: boolean }
+) {
+    const { isUp, percent } = trend
+    const directionUp = options?.invert ? !isUp : isUp
+
+    const directionText = directionUp ? "increased" : "decreased"
+
+    return `${label} ${directionText} by ${percent}%`
+}
+
+
+export function groupIncidentsByDate(incidents: { createdAt: Date }[]) {
+    const map = new Map<string, number>()
+
+    for (const incident of incidents) {
+        const date = incident.createdAt.toISOString().split("T")[0] // YYYY-MM-DD
+
+        map.set(date, (map.get(date) || 0) + 1)
+    }
+
+    return Array.from(map.entries()).map(([date, count]) => ({
+        date,
+        incidents: count,
+    }))
 }

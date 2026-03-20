@@ -11,24 +11,127 @@ import {
 } from "@/components/ui/card"
 import { TrendingUpIcon, TrendingDownIcon } from "lucide-react"
 
+type Trend = {
+  percent: string
+  direction: "up" | "down" | "neutral"
+}
+
+function getTrend(current: number, previous: number, invert = false): Trend {
+  if (previous === 0) {
+    return { percent: "0.0", direction: "neutral" }
+  }
+
+  let change = ((current - previous) / previous) * 100
+  if (invert) change = -change
+
+  const percent = Math.abs(change)
+
+  let direction: "up" | "down" | "neutral" =
+    percent < 0.05 ? "neutral" : change > 0 ? "up" : "down"
+
+  return {
+    percent: percent.toFixed(1),
+    direction,
+  }
+}
+
+function getFooterText(
+  label: string,
+  trend: Trend,
+  options?: { invert?: boolean }
+) {
+  const effectiveDirection =
+    options?.invert
+      ? trend.direction === "up"
+        ? "down"
+        : trend.direction === "down"
+        ? "up"
+        : "neutral"
+      : trend.direction
+
+  if (effectiveDirection === "neutral") {
+    return `${label} remained stable`
+  }
+
+  const directionText =
+    effectiveDirection === "up" ? "increased" : "decreased"
+
+  return `${label} ${directionText} by ${trend.percent}%`
+}
+
 export function SectionCards({
   totalIncidents,
   totalOpenIncidents,
   SLACompliance,
   avgResolutionTime,
+  prevTotalIncidents,
+  prevTotalOpenIncidents,
+  prevSLACompliance,
+  prevAvgResolutionTime,
 }: {
-  totalIncidents: number;
-  totalOpenIncidents: number;
-  SLACompliance: number;
-  unassignedIncidents: number;
-  avgResolutionTime: number;
+  totalIncidents: number
+  totalOpenIncidents: number
+  SLACompliance: number
+  avgResolutionTime: number
+  prevTotalIncidents: number
+  prevTotalOpenIncidents: number
+  prevSLACompliance: number
+  prevAvgResolutionTime: number
 }) {
+  const totalTrend = getTrend(totalIncidents, prevTotalIncidents)
+  const openTrend = getTrend(totalOpenIncidents, prevTotalOpenIncidents)
+  const slaTrend = getTrend(SLACompliance, prevSLACompliance)
+  const resolutionTrend = getTrend(
+    avgResolutionTime,
+    prevAvgResolutionTime,
+    true
+  )
+
+  const renderBadge = (trend: Trend, invert = false) => {
+    const dir = invert
+      ? trend.direction === "up"
+        ? "down"
+        : trend.direction === "down"
+        ? "up"
+        : "neutral"
+      : trend.direction
+
+    return (
+      <>
+        {dir === "up" && <TrendingUpIcon />}
+        {dir === "down" && <TrendingDownIcon />}
+        {dir === "neutral" && <span>—</span>}
+
+        {dir === "up" && "+"}
+        {dir === "down" && "-"}
+        {dir === "neutral" && ""}
+
+        {trend.percent}%
+      </>
+    )
+  }
+
+  const renderFooterIcon = (trend: Trend, invert = false) => {
+    const dir = invert
+      ? trend.direction === "up"
+        ? "down"
+        : trend.direction === "down"
+        ? "up"
+        : "neutral"
+      : trend.direction
+
+    if (dir === "up") return <TrendingUpIcon className="size-4" />
+    if (dir === "down") return <TrendingDownIcon className="size-4" />
+    return <span className="size-4">—</span>
+  }
+
   return (
     <div className="grid grid-cols-1 gap-4 px-4 
     *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 
     *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 
     @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
 
+      {/* Total Incidents */}
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Total Incidents</CardDescription>
@@ -37,22 +140,22 @@ export function SectionCards({
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              <TrendingUpIcon
-              />
-              +12.5%
+              {renderBadge(totalTrend)}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Trending up this month{" "}
-            <TrendingUpIcon className="size-4" />
+          <div className="flex gap-2 font-medium">
+            {getFooterText("Incidents", totalTrend)}
+            {renderFooterIcon(totalTrend)}
           </div>
           <div className="text-muted-foreground">
-            Visitors for the last 6 months
+            Compared to previous period
           </div>
         </CardFooter>
       </Card>
+
+      {/* Open Incidents */}
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Total open incidents</CardDescription>
@@ -61,22 +164,22 @@ export function SectionCards({
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              <TrendingDownIcon
-              />
-              -20%
+              {renderBadge(openTrend)}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Down 20% this period{" "}
-            <TrendingDownIcon className="size-4" />
+          <div className="flex gap-2 font-medium">
+            {getFooterText("Open incidents", openTrend)}
+            {renderFooterIcon(openTrend)}
           </div>
           <div className="text-muted-foreground">
-            Acquisition needs attention
+            Active workload trend
           </div>
         </CardFooter>
       </Card>
+
+      {/* SLA Compliance */}
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>SLA Compliance</CardDescription>
@@ -85,40 +188,45 @@ export function SectionCards({
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              <TrendingUpIcon
-              />
-              +12.5%
+              {renderBadge(slaTrend)}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Strong user retention{" "}
-            <TrendingUpIcon className="size-4" />
+          <div className="flex gap-2 font-medium">
+            {getFooterText("SLA compliance", slaTrend)}
+            {renderFooterIcon(slaTrend)}
           </div>
-          <div className="text-muted-foreground">Engagement exceed targets</div>
+          <div className="text-muted-foreground">
+            Performance against deadlines
+          </div>
         </CardFooter>
       </Card>
+
+      {/* Resolution Time */}
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Average Resolution Time</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {avgResolutionTime}
+            {avgResolutionTime}<span className="text-sm">%</span>
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              <TrendingUpIcon
-              />
-              +4.5%
+              {/* inverted display */}
+              {renderBadge(resolutionTrend, true)}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Steady performance increase{" "}
-            <TrendingUpIcon className="size-4" />
+          <div className="flex gap-2 font-medium">
+            {getFooterText("Resolution time", resolutionTrend, {
+              invert: true,
+            })}
+            {renderFooterIcon(resolutionTrend, true)}
           </div>
-          <div className="text-muted-foreground">Meets growth projections</div>
+          <div className="text-muted-foreground">
+            Time taken to resolve incidents
+          </div>
         </CardFooter>
       </Card>
     </div>

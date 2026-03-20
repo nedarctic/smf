@@ -66,27 +66,18 @@ async function main() {
   // =========================
   const categories = await Promise.all([
     prisma.category.create({
-      data: {
-        companyId: company.id,
-        categoryName: "Harassment",
-      },
+      data: { companyId: company.id, categoryName: "Harassment" },
     }),
     prisma.category.create({
-      data: {
-        companyId: company.id,
-        categoryName: "Fraud",
-      },
+      data: { companyId: company.id, categoryName: "Fraud" },
     }),
     prisma.category.create({
-      data: {
-        companyId: company.id,
-        categoryName: "Safety Violation",
-      },
+      data: { companyId: company.id, categoryName: "Safety Violation" },
     }),
   ]);
 
   // =========================
-  // INCIDENTS
+  // INCIDENTS (10 total)
   // =========================
   const incident1 = await prisma.incident.create({
     data: {
@@ -96,11 +87,11 @@ async function main() {
       description: "Manager verbally harassed employee during meeting.",
       location: "Nairobi HQ",
       involvedPeople: "Manager A, Employee B",
-      incidentDate: new Date("2025-02-10"),
+      incidentDate: new Date("2026-03-18"),
       reporterType: ReporterType.Confidential,
       status: IncidentStatus.InReview,
       secretCodeHash: await bcrypt.hash("secret123", 10),
-      deadlineAt: new Date("2025-02-20"),
+      deadlineAt: new Date("2026-03-25"),
     },
   });
 
@@ -111,7 +102,7 @@ async function main() {
       category: categories[1].categoryName,
       description: "Suspicious financial transactions detected.",
       location: "Finance Department",
-      incidentDate: new Date("2025-01-15"),
+      incidentDate: new Date("2026-03-15"),
       reporterType: ReporterType.Anonymous,
       status: IncidentStatus.Investigation,
       secretCodeHash: await bcrypt.hash("secret456", 10),
@@ -125,17 +116,121 @@ async function main() {
       category: categories[2].categoryName,
       description: "Unsafe equipment used on site.",
       location: "Warehouse",
-      incidentDate: new Date("2025-01-05"),
+      incidentDate: new Date("2026-03-10"),
       reporterType: ReporterType.Confidential,
       status: IncidentStatus.Resolved,
       secretCodeHash: await bcrypt.hash("secret789", 10),
-      closedAt: new Date(),
+      closedAt: new Date("2026-03-13"),
       duration: "3 days",
     },
   });
 
+  const incident4 = await prisma.incident.create({
+    data: {
+      companyId: company.id,
+      incidentIdDisplay: "INC-004",
+      category: categories[0].categoryName,
+      description: "Inappropriate comments in team chat.",
+      location: "Remote",
+      incidentDate: new Date("2026-03-05"),
+      reporterType: ReporterType.Anonymous,
+      status: IncidentStatus.InReview,
+      secretCodeHash: await bcrypt.hash("secret004", 10),
+    },
+  });
+
+  const incident5 = await prisma.incident.create({
+    data: {
+      companyId: company.id,
+      incidentIdDisplay: "INC-005",
+      category: categories[1].categoryName,
+      description: "Expense fraud suspected.",
+      location: "Accounts",
+      incidentDate: new Date("2026-02-28"),
+      reporterType: ReporterType.Confidential,
+      status: IncidentStatus.Investigation,
+      secretCodeHash: await bcrypt.hash("secret005", 10),
+    },
+  });
+
+  const incident6 = await prisma.incident.create({
+    data: {
+      companyId: company.id,
+      incidentIdDisplay: "INC-006",
+      category: categories[2].categoryName,
+      description: "Fire exit blocked.",
+      location: "Factory Floor",
+      incidentDate: new Date("2026-02-20"),
+      reporterType: ReporterType.Anonymous,
+      status: IncidentStatus.Resolved,
+      secretCodeHash: await bcrypt.hash("secret006", 10),
+      closedAt: new Date("2026-02-22"),
+      duration: "2 days",
+    },
+  });
+
+  const incident7 = await prisma.incident.create({
+    data: {
+      companyId: company.id,
+      incidentIdDisplay: "INC-007",
+      category: categories[0].categoryName,
+      description: "Bullying reported by junior staff.",
+      location: "HR Office",
+      incidentDate: new Date("2026-02-15"),
+      reporterType: ReporterType.Confidential,
+      status: IncidentStatus.InReview,
+      secretCodeHash: await bcrypt.hash("secret007", 10),
+    },
+  });
+
+  const incident8 = await prisma.incident.create({
+    data: {
+      companyId: company.id,
+      incidentIdDisplay: "INC-008",
+      category: categories[1].categoryName,
+      description: "Unauthorized vendor payments.",
+      location: "Finance",
+      incidentDate: new Date("2026-02-10"),
+      reporterType: ReporterType.Anonymous,
+      status: IncidentStatus.Resolved,
+      secretCodeHash: await bcrypt.hash("secret008", 10),
+      closedAt: new Date("2026-02-14"),
+      duration: "4 days",
+    },
+  });
+
+  const incident9 = await prisma.incident.create({
+    data: {
+      companyId: company.id,
+      incidentIdDisplay: "INC-009",
+      category: categories[2].categoryName,
+      description: "Lack of protective gear.",
+      location: "Construction Site",
+      incidentDate: new Date("2026-02-05"),
+      reporterType: ReporterType.Confidential,
+      status: IncidentStatus.Investigation,
+      secretCodeHash: await bcrypt.hash("secret009", 10),
+    },
+  });
+
+  const incident10 = await prisma.incident.create({
+    data: {
+      companyId: company.id,
+      incidentIdDisplay: "INC-010",
+      category: categories[0].categoryName,
+      description: "Discrimination complaint filed.",
+      location: "Head Office",
+      incidentDate: new Date("2026-01-30"),
+      reporterType: ReporterType.Anonymous,
+      status: IncidentStatus.Resolved,
+      secretCodeHash: await bcrypt.hash("secret010", 10),
+      closedAt: new Date("2026-02-03"),
+      duration: "4 days",
+    },
+  });
+
   // =========================
-  // REPORTERS
+  // REPORTERS (kept consistent + expanded)
   // =========================
   await prisma.reporter.create({
     data: {
@@ -154,23 +249,37 @@ async function main() {
     },
   });
 
+  await prisma.reporter.create({
+    data: {
+      incidentId: incident5.id,
+      name: "Carol Reporter",
+      email: "carol@example.com",
+    },
+  });
+
+  await prisma.reporter.create({
+    data: {
+      incidentId: incident7.id,
+      name: "David Reporter",
+      email: "david@example.com",
+    },
+  });
+
   // =========================
   // INCIDENT HANDLERS
   // =========================
   await prisma.incidentHandler.createMany({
     data: [
-      {
-        incidentId: incident1.id,
-        handlerId: handler1.id,
-      },
-      {
-        incidentId: incident2.id,
-        handlerId: handler2.id,
-      },
-      {
-        incidentId: incident3.id,
-        handlerId: handler1.id,
-      },
+      { incidentId: incident1.id, handlerId: handler1.id },
+      { incidentId: incident2.id, handlerId: handler2.id },
+      { incidentId: incident3.id, handlerId: handler1.id },
+      { incidentId: incident4.id, handlerId: handler2.id },
+      { incidentId: incident5.id, handlerId: handler1.id },
+      { incidentId: incident6.id, handlerId: handler2.id },
+      { incidentId: incident7.id, handlerId: handler1.id },
+      { incidentId: incident8.id, handlerId: handler2.id },
+      { incidentId: incident9.id, handlerId: handler1.id },
+      { incidentId: incident10.id, handlerId: handler2.id },
     ],
   });
 
@@ -191,6 +300,12 @@ async function main() {
         fileName: "report.pdf",
         filePath: "/uploads/report.pdf",
       },
+      {
+        incidentId: incident4.id,
+        uploadedBy: AttachmentUploader.Reporter,
+        fileName: "chat_log.txt",
+        filePath: "/uploads/chat_log.txt",
+      },
     ],
   });
 
@@ -199,19 +314,14 @@ async function main() {
   // =========================
   await prisma.secretCode.createMany({
     data: [
-      {
-        incidentId: incident1.id,
-        secretCodeHash: await bcrypt.hash("secret123", 10),
-      },
-      {
-        incidentId: incident2.id,
-        secretCodeHash: await bcrypt.hash("secret456", 10),
-      },
+      { incidentId: incident1.id, secretCodeHash: await bcrypt.hash("secret123", 10) },
+      { incidentId: incident2.id, secretCodeHash: await bcrypt.hash("secret456", 10) },
+      { incidentId: incident3.id, secretCodeHash: await bcrypt.hash("secret789", 10) },
     ],
   });
 
   // =========================
-  // MESSAGES (CHAT THREAD)
+  // MESSAGES
   // =========================
   await prisma.message.createMany({
     data: [
@@ -232,6 +342,12 @@ async function main() {
         senderType: SenderType.Handler,
         senderId: handler2.id,
         content: "Investigation has started.",
+      },
+      {
+        incidentId: incident5.id,
+        senderType: SenderType.Handler,
+        senderId: handler1.id,
+        content: "We are reviewing financial records.",
       },
     ],
   });
