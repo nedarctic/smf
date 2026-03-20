@@ -3,7 +3,6 @@ import { Geist, Geist_Mono, Figtree, Raleway, Nunito_Sans } from "next/font/goog
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-
 const nunitoSans = Nunito_Sans({variable:'--font-sans'});
 
 const geistSans = Geist({

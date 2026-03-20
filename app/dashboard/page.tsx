@@ -23,6 +23,7 @@ export default async function DashboardPage() {
     const companyId = res.data!
 
     const total_incidents = await totalIncidents(companyId);
+    console.log("total incidents at the dashboard page:", total_incidents);
     const total_open_incidents = await totalOpenIncidents(companyId);
     const SLA_compliance = await SLACompliance(companyId);
     const unassigned_incidents = await unassignedIncidents(companyId);
@@ -46,17 +47,21 @@ export default async function DashboardPage() {
 
 
                         <SectionCards
-                            totalIncidents={incidentsTrend.current}
+                            currentTotalIncidents={incidentsTrend.current}
                             prevTotalIncidents={incidentsTrend.previous}
+                            totalIncidents={total_incidents}
 
-                            totalOpenIncidents={openTrend.current}
+                            currentOpenIncidents={openTrend.current}
                             prevTotalOpenIncidents={openTrend.previous}
+                            totalOpenIncidents={total_open_incidents}
 
-                            SLACompliance={slaTrend.current}
+                            currentSLACompliance={slaTrend.current}
                             prevSLACompliance={slaTrend.previous}
+                            SLACompliance={SLA_compliance}
 
-                            avgResolutionTime={resolutionTrend.current}
+                            currentAvgResolutionTime={resolutionTrend.current}
                             prevAvgResolutionTime={resolutionTrend.previous}
+                            avgResolutionTime={avg_resolution_time}
                         />
 
                         <div className="px-4 lg:px-6">

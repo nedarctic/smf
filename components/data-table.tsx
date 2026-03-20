@@ -39,6 +39,7 @@ import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 import { toast } from "sonner"
 import { z } from "zod"
 import { Incident } from "@/lib/generated/prisma/client"
+import { format } from 'date-fns';
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Badge } from "@/components/ui/badge"
@@ -157,7 +158,7 @@ const columns: ColumnDef<Incident>[] = [
     accessorKey: "incidentDate",
     header: "Date",
     cell: ({ row }) =>
-      new Date(row.original.incidentDate).toLocaleDateString(),
+      new Date(row.original.incidentDate).toLocaleDateString("en-GB", {day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC"}),
   },
   {
     accessorKey: "status",
@@ -223,7 +224,7 @@ function IncidentViewer({ item }: { item: Incident }) {
           <p><strong>Location:</strong> {item.location}</p>
           <p><strong>Status:</strong> {item.status}</p>
           <p><strong>Reported:</strong> {item.reporterType}</p>
-          <p><strong>Date:</strong> {new Date(item.incidentDate).toLocaleString()}</p>
+          <p><strong>Date:</strong> {new Date(item.incidentDate).toLocaleDateString("en-GB", {day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC"})}</p>
         </div>
       </DrawerContent>
     </Drawer>
@@ -345,10 +346,10 @@ export function DataTable({
           </SelectContent>
         </Select>
         <TabsList className="hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:bg-muted-foreground/30 **:data-[slot=badge]:px-1 @4xl/main:flex">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="open">Open</TabsTrigger>
-            <TabsTrigger value="resolved">Resolved</TabsTrigger>
-            <TabsTrigger value="overdue">Overdue</TabsTrigger>
+          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger value="open">Open</TabsTrigger>
+          <TabsTrigger value="resolved">Resolved</TabsTrigger>
+          <TabsTrigger value="overdue">Overdue</TabsTrigger>
         </TabsList>
         <div className="flex items-center gap-2">
           <DropdownMenu>
@@ -620,7 +621,7 @@ function TableCellViewer({ item }: { item: Incident }) {
             <div>
               <Label>Date</Label>
               <div>
-                {new Date(item.incidentDate).toLocaleString()}
+                {new Date(item.incidentDate).toLocaleDateString("en-GB", {day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC"})}
               </div>
             </div>
           </div>

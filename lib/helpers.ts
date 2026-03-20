@@ -16,34 +16,34 @@ function getDateRanges(days: number) {
 }
 
 export async function getIncidents(
-  companyId: string,
-  options?: {
-    startDate?: Date
-    endDate?: Date
-    limit?: number
-    offset?: number
-  }
+    companyId: string,
+    options?: {
+        startDate?: Date
+        endDate?: Date
+        limit?: number
+        offset?: number
+    }
 ) {
-  const { startDate, endDate, limit, offset } = options || {}
+    const { startDate, endDate, limit, offset } = options || {}
 
-  return prisma.incident.findMany({
-    where: {
-      companyId,
-      ...(startDate || endDate
-        ? {
-            createdAt: {
-              ...(startDate ? { gte: startDate } : {}),
-              ...(endDate ? { lt: endDate } : {}),
-            },
-          }
-        : {}),
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    ...(limit !== undefined ? { take: limit } : {}),
-    ...(offset !== undefined ? { skip: offset } : {}),
-  })
+    return prisma.incident.findMany({
+        where: {
+            companyId,
+            ...(startDate || endDate
+                ? {
+                    createdAt: {
+                        ...(startDate ? { gte: startDate } : {}),
+                        ...(endDate ? { lt: endDate } : {}),
+                    },
+                }
+                : {}),
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+        ...(limit !== undefined ? { take: limit } : {}),
+        ...(offset !== undefined ? { skip: offset } : {}),
+    })
 }
 
 
@@ -56,6 +56,8 @@ export async function totalIncidentsTrend(companyId: string, days = 30) {
             createdAt: { gte: currentStart, lt: now },
         },
     })
+
+    console.log("current inside total incidents trend:", current)
 
     const previous = await prisma.incident.count({
         where: {
@@ -276,27 +278,27 @@ export async function overdueIncidents(companyId: string) {
 }
 
 export async function avgResolutionTime(companyId: string): Promise<number> {
-  const data = await prisma.incident.findMany({
-    where: { companyId },
-  })
+    const data = await prisma.incident.findMany({
+        where: { companyId },
+    })
 
-  const closed = data.filter((i) => i.closedAt)
+    const closed = data.filter((i) => i.closedAt)
 
-  if (closed.length === 0) return 0
+    if (closed.length === 0) return 0
 
-  const totalResolutionTimeMs = closed.reduce((sum, incident) => {
-    const start = new Date(incident.incidentDate).getTime()
-    const end = new Date(incident.closedAt!).getTime()
+    const totalResolutionTimeMs = closed.reduce((sum, incident) => {
+        const start = new Date(incident.incidentDate).getTime()
+        const end = new Date(incident.closedAt!).getTime()
 
-    if (end < start) return sum // guard
+        if (end < start) return sum // guard
 
-    return sum + (end - start)
-  }, 0)
+        return sum + (end - start)
+    }, 0)
 
-  const avgMs = totalResolutionTimeMs / closed.length
-  const avgDays = avgMs / (1000 * 60 * 60 * 24)
+    const avgMs = totalResolutionTimeMs / closed.length
+    const avgDays = avgMs / (1000 * 60 * 60 * 24)
 
-  return Math.round(avgDays)
+    return Math.round(avgDays)
 }
 
 export function getTrend(current: number, previous: number, invert = false) {
@@ -341,4 +343,53 @@ export function groupIncidentsByDate(incidents: { createdAt: Date }[]) {
         date,
         incidents: count,
     }))
+}
+
+export async function getPaginatedIncidents({
+    query,
+    sort,
+    page = 1,
+    pageSize = 5,
+}: {
+    query?: string;
+    sort?: "date" | "category" | "unassigned";
+    page?: number;
+    pageSize?: number;
+} = {}) {
+
+    const res = await getCompanyId();
+    const companyId = res.data;
+
+    const incidents = await prisma.incident.findMany({
+        where: { companyId: companyId }
+    });
+
+    let filtered = incidents.filter(incident => {
+        if (!query) return true;
+
+        return incident.description
+            .toLowerCase()
+            .includes(query.toLowerCase()) ||
+            incident.category
+                .toLowerCase()
+                .includes(query.toLowerCase())
+    });
+
+    if (sort) {
+        filtered = [...filtered].sort((a, b) => {
+            return sort === "category" ? a.category
+                .localeCompare(b.category) : a.createdAt.getTime() -
+            b.createdAt.getTime();
+        })
+    }
+
+    const total = filtered.length;
+    const start = (page - 1) * pageSize;
+    const paginated = filtered.slice(start, start + pageSize);
+
+    return {
+        data: paginated,
+        total,
+        totalPages: Math.ceil(total / pageSize)
+    }
 }

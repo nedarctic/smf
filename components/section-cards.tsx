@@ -61,28 +61,36 @@ function getFooterText(
 
 export function SectionCards({
   totalIncidents,
+  currentTotalIncidents,
   totalOpenIncidents,
-  SLACompliance,
-  avgResolutionTime,
+  currentSLACompliance,
+  currentAvgResolutionTime,
   prevTotalIncidents,
   prevTotalOpenIncidents,
   prevSLACompliance,
   prevAvgResolutionTime,
+  currentOpenIncidents,
+  SLACompliance,
+  avgResolutionTime,
 }: {
-  totalIncidents: number
+  currentTotalIncidents: number
   totalOpenIncidents: number
-  SLACompliance: number
-  avgResolutionTime: number
+  currentSLACompliance: number
+  currentAvgResolutionTime: number
   prevTotalIncidents: number
   prevTotalOpenIncidents: number
   prevSLACompliance: number
   prevAvgResolutionTime: number
+  totalIncidents: number
+  currentOpenIncidents: number
+  SLACompliance: number
+  avgResolutionTime: number
 }) {
-  const totalTrend = getTrend(totalIncidents, prevTotalIncidents)
-  const openTrend = getTrend(totalOpenIncidents, prevTotalOpenIncidents)
-  const slaTrend = getTrend(SLACompliance, prevSLACompliance)
+  const totalTrend = getTrend(currentTotalIncidents, prevTotalIncidents)
+  const openTrend = getTrend(currentOpenIncidents, prevTotalOpenIncidents)
+  const slaTrend = getTrend(currentSLACompliance, prevSLACompliance)
   const resolutionTrend = getTrend(
-    avgResolutionTime,
+    currentAvgResolutionTime,
     prevAvgResolutionTime,
     true
   )
