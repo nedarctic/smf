@@ -9,12 +9,27 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Sheet, 
+  SheetContent, 
+  SheetTitle,
+  SheetHeader
+} from "./ui/sheet";
 import type { Incident } from "@/lib/generated/prisma/client";
+import { IncidentDetails } from "./incident-details";
+import { useState } from "react";
 
 export function IncidentsTable({ incidents }: { incidents: Incident[] }) {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const handleOpen = (id: string) => {
+    setSelectedId(id);
+    setOpen(true);
+  };
 
   return (
+    <>
     <Table>
       <TableHeader>
         <TableRow>
@@ -31,7 +46,8 @@ export function IncidentsTable({ incidents }: { incidents: Incident[] }) {
           <TableRow
             key={incident.id}
             className="cursor-pointer hover:bg-muted"
-            onClick={() => router.push(`/dashboard/incidents/${incident.id}`)}
+            // onClick={() => router.push(`/dashboard/incidents/${incident.id}`)}
+            onClick={() => handleOpen(incident.id)}
           >
             <TableCell className="font-medium">
               {incident.incidentIdDisplay}
@@ -58,5 +74,18 @@ export function IncidentsTable({ incidents }: { incidents: Incident[] }) {
         ))}
       </TableBody>
     </Table>
+
+    <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent className="w-[500px] sm:w-[600px] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Incident Details</SheetTitle>
+          </SheetHeader>
+
+          {selectedId && (
+            <IncidentDetails incidentId={selectedId} />
+          )}
+        </SheetContent>
+      </Sheet>
+      </>
   );
 }

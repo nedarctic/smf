@@ -268,7 +268,7 @@ export function DataTable({
         return data.filter((i) => i.status !== "Closed")
 
       case "resolved":
-        return data.filter((i) => i.status === "Closed")
+        return data.filter((i) => i.status === "Resolved")
 
       case "overdue":
         return data.filter((i) =>

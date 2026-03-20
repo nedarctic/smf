@@ -370,7 +370,7 @@ export async function getPaginatedIncidents({
         if (!query) return true;
 
         if (query === "resolved") {
-            return incident.status === "Closed"
+            return incident.status === "Resolved"
         }
 
         if (query === "unassigned") {
@@ -405,4 +405,13 @@ export async function getPaginatedIncidents({
         total,
         totalPages: Math.ceil(total / pageSize)
     }
+}
+
+export async function getIncidentDetails (incidentId: string) {
+    const incident = await prisma.incident.findUnique({
+        where: {id: incidentId},
+        include: {handlers: true}
+    });
+
+    return incident;
 }
