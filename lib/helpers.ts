@@ -124,3 +124,28 @@ export async function overdueIncidents(companyId: string) {
     return overdueIncidents;
 }
 
+export async function avgResolutionTime(companyId: string): Promise<number> {
+
+  const data = await prisma.incident.findMany({
+        where: { companyId: companyId }
+    });
+
+  // get closed incidents
+  const closed = data.filter(({ closedAt }) => closedAt !== null);
+
+  if (closed.length === 0) return 0;
+
+  // get time taken to resolve all incidents
+  const total_resoulution_time = closed.reduce((sum, incident) => {
+    const created = new Date(incident.createdAt).getTime();
+    const closed = new Date(incident.closedAt!).getTime();
+    return sum + (closed - created);
+  }, 0);
+
+  // divide total resolution time by total resolved cases
+  const total_avg_microsecs = total_resoulution_time / closed.length;
+
+  // convert to days and round
+  return Math.round(total_avg_microsecs / (1000 * 60 * 60 * 24));
+
+}

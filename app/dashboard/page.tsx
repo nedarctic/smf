@@ -2,12 +2,23 @@ import { ChartAreaInteractive } from "@/components/chart-area-interactive"
 import { DataTable } from "@/components/data-table"
 import { SectionCards } from "@/components/section-cards"
 import data from "./data.json";
-import { getCompanyId } from '@/lib/helpers'
+import { 
+    getCompanyId,
+    totalIncidents, 
+    totalOpenIncidents,
+    SLACompliance,
+    unassignedIncidents,
+    avgResolutionTime
+} from '@/lib/helpers'
 
 export default async function DashboardPage() {
 
     const companyId = await getCompanyId();
-    console.log("Company ID:", companyId);
+    const total_incidents = await totalIncidents(companyId.data!);
+    const total_open_incidents = await totalOpenIncidents(companyId.data!);
+    const SLA_compliance = await SLACompliance(companyId.data!);
+    const unassigned_incidents = await unassignedIncidents(companyId.data!);
+    const avg_resolution_time = await avgResolutionTime(companyId.data!);
 
     return (
         <div>
@@ -16,7 +27,13 @@ export default async function DashboardPage() {
                     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
                         
 
-                        <SectionCards />
+                        <SectionCards 
+                        totalIncidents={total_incidents} 
+                        totalOpenIncidents={total_open_incidents}
+                        SLACompliance={SLA_compliance}
+                        unassignedIncidents={unassigned_incidents.length}
+                        avgResolutionTime={avg_resolution_time}
+                        />
                         <div className="px-4 lg:px-6">
                             <ChartAreaInteractive />
                         </div>
