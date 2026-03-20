@@ -16,23 +16,34 @@ function getDateRanges(days: number) {
 }
 
 export async function getIncidents(
-    companyId: string,
-    startDate?: Date,
+  companyId: string,
+  options?: {
+    startDate?: Date
     endDate?: Date
+    limit?: number
+    offset?: number
+  }
 ) {
-    return prisma.incident.findMany({
-        where: {
-            companyId,
-            ...(startDate || endDate
-                ? {
-                    createdAt: {
-                        ...(startDate ? { gte: startDate } : {}),
-                        ...(endDate ? { lt: endDate } : {}),
-                    },
-                }
-                : {}),
-        },
-    })
+  const { startDate, endDate, limit, offset } = options || {}
+
+  return prisma.incident.findMany({
+    where: {
+      companyId,
+      ...(startDate || endDate
+        ? {
+            createdAt: {
+              ...(startDate ? { gte: startDate } : {}),
+              ...(endDate ? { lt: endDate } : {}),
+            },
+          }
+        : {}),
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    ...(limit !== undefined ? { take: limit } : {}),
+    ...(offset !== undefined ? { skip: offset } : {}),
+  })
 }
 
 

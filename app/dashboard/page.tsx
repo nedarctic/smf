@@ -33,7 +33,7 @@ export default async function DashboardPage() {
     const slaTrend = await slaComplianceTrend(companyId);
     const resolutionTrend = await avgResolutionTimeTrend(companyId);
 
-    const incidents = await getIncidents(companyId);
+    const incidents = await getIncidents(companyId, {limit: 15});
     const chartData = await groupIncidentsByDate(incidents);
 
 
@@ -62,7 +62,7 @@ export default async function DashboardPage() {
                         <div className="px-4 lg:px-6">
                             <ChartAreaInteractive chartData={chartData} />
                         </div>
-                        <DataTable data={data} />
+                        <DataTable data={incidents} />
                     </div>
                 </div>
             </div>

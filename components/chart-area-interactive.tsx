@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import {
@@ -141,6 +141,8 @@ export function ChartAreaInteractive({
               }
             />
 
+            <YAxis domain={["dataMin", "dataMax  1.5"]} />
+
             <ChartTooltip
               cursor={false}
               content={
@@ -158,7 +160,8 @@ export function ChartAreaInteractive({
 
             <Area
               dataKey="incidents"
-              type="natural"
+              type="monotone"
+              strokeWidth={2}
               fill="url(#fillIncidents)"
               stroke="var(--primary)"
             />
