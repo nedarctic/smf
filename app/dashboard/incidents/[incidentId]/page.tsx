@@ -12,7 +12,7 @@ export default async function ({
         <div className="flex flex-col items-center 
         justify-start min-h-screen w-full px-10 py-16">
             <div className="flex flex-col items-start 
-            gap-8 w-4/5">
+            gap-8 w-11/12">
 
                 <AppBreadcrumb
                     items={[

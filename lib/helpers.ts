@@ -361,16 +361,29 @@ export async function getPaginatedIncidents({
     const companyId = res.data;
 
     const incidents = await prisma.incident.findMany({
-        where: { companyId: companyId }
+        where: { companyId: companyId },
+        include: {handlers: true},
+        orderBy: {createdAt: "desc"}
     });
 
     let filtered = incidents.filter(incident => {
         if (!query) return true;
 
+        if (query === "resolved") {
+            return incident.status === "Closed"
+        }
+
+        if (query === "unassigned") {
+            return incident.handlers.length === 0;
+        }
+
         return incident.description
             .toLowerCase()
             .includes(query.toLowerCase()) ||
             incident.category
+                .toLowerCase()
+                .includes(query.toLowerCase()) ||
+            incident.status
                 .toLowerCase()
                 .includes(query.toLowerCase())
     });

@@ -58,22 +58,31 @@ export function SearchInput () {
 
     const handleUnassignedFilter = () => {
         const params = new URLSearchParams(searchParams.toString());
-        params.set("query", "assigned");
+        params.set("query", "unassigned");
+        params.set("page", "1");
+        router.replace(`${pathname}?${params.toString()}`);
+    }
+
+    const handleResolvedFilter = () => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("query", "resolved");
         params.set("page", "1");
         router.replace(`${pathname}?${params.toString()}`);
     }
 
     return (
         <div className="flex flex-col 
-        items-start gap-6">
+        items-start sm:gap-6 gap-3">
             <div className="flex gap-6 max-w-2/3">
                 <Input className="w-100"
                     onChange={(e) => setSearch(e.target.value)}
                     value={search} name="search"
-                    placeholder={"Search blogs..."} />
+                    placeholder={"Search incidents..."} />
             </div>
 
-            <div className="flex py-4 gap-4">
+            <div className="grid lg:grid-cols-6 
+            sm:grid-cols-3 md:grid-cols-4
+            grid-cols-2 py-4 gap-4">
                 <Button className="border-gray-500 
                 border-2" 
                 variant={"outline"}
@@ -86,6 +95,11 @@ export function SearchInput () {
                 onClick={handleCategorySort}                
                 >Category</Button>
                 <Button onClick={handleUnassignedFilter}>Unassigned</Button>
+                <Button className="border-gray-500 
+                border-2" 
+                variant={"outline"}
+                onClick={handleResolvedFilter}                
+                >Resolved</Button>
             </div>
             {/* <p className="text-black 
             dark:text-white
