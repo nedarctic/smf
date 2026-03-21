@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ReassignHandlerDialog } from "@/components/reassign-handler-dialogue";
+import { UpdateStatusDialogue } from "@/components/update-status";
 
 export default async function ({
     params,
@@ -159,11 +160,9 @@ export default async function ({
 
                         <CardContent className="flex flex-col gap-2">
 
-                            <ReassignHandlerDialog handlers={handlers} />
+                            <ReassignHandlerDialog currentHandlers={incidentHandlers!} handlers={handlers} />
 
-                            <Button variant="outline">
-                                Update Status
-                            </Button>
+                            <UpdateStatusDialogue activeStatus={incident.status}/>
 
                             <Button variant="outline">
                                 Update Deadline
