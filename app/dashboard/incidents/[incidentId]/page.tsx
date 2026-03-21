@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ReassignHandlerDialog } from "@/components/reassign-handler-dialogue";
 import { UpdateStatusDialogue } from "@/components/update-status";
+import { UpdateDeadlineDialogue } from "@/components/update-deadline-dialogue";
+import { CloseIncidentDialogue } from "@/components/close-incident-dialogue";
 
 export default async function ({
     params,
@@ -164,21 +166,9 @@ export default async function ({
 
                             <UpdateStatusDialogue activeStatus={incident.status}/>
 
-                            <Button variant="outline">
-                                Update Deadline
-                            </Button>
+                            <UpdateDeadlineDialogue deadlineAt={incident.deadlineAt!} />
 
-                            <Button variant="outline">
-                                Add Internal Note
-                            </Button>
-
-                            <Button variant="outline">
-                                Upload Evidence
-                            </Button>
-
-                            <Button variant="destructive">
-                                Close Incident
-                            </Button>
+                            <CloseIncidentDialogue incident={incident} />
 
                         </CardContent>
                     </Card>
