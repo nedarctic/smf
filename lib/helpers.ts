@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "./prisma";
+import { DbNull } from "@prisma/client/runtime/client";
 
 
 function getDateRanges(days: number) {
@@ -414,4 +415,22 @@ export async function getIncidentDetails (incidentId: string) {
     });
 
     return incident;
+}
+
+export async function getHandlers () {
+    const res = await getCompanyId();
+    const companyId = res.data;
+
+    const handlers = await prisma.user.findMany({
+        where: {companyId: companyId, role: "Handler"},
+    })
+
+    return handlers;
+}
+
+export async function getIncidentHandler (handlerId: string) {
+    const handler = await prisma.user.findUnique({
+        where: {id: handlerId}
+    });
+    return handler;
 }

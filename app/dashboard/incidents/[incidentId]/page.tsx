@@ -1,8 +1,9 @@
 import { AppBreadcrumb } from "@/components/breadcrumb";
-import { getIncidentDetails } from "@/lib/helpers";
+import { getIncidentDetails, getHandlers, getIncidentHandler } from "@/lib/helpers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ReassignHandlerDialog } from "@/components/reassign-handler-dialogue";
 
 export default async function ({
     params,
@@ -11,6 +12,18 @@ export default async function ({
 }) {
     const { incidentId } = await params;
     const incident = await getIncidentDetails(incidentId);
+    const handlers = await getHandlers();
+    const handlerIds = incident?.handlers;
+
+    const incidentHandlers = handlers.filter(handler => {
+        const handlers = [];
+        for(const id of handlerIds!){
+            if(handler.id == id.id) {
+                handlers.push(handler);
+            }
+        }
+        return handlers;
+    });
 
     if (!incident) {
         return <p className="p-10">Incident not found</p>;
@@ -150,9 +163,7 @@ export default async function ({
 
                         <CardContent className="flex flex-col gap-2">
 
-                            <Button variant="outline">
-                                Assign / Reassign Handler
-                            </Button>
+                            <ReassignHandlerDialog handlers={handlers} />
 
                             <Button variant="outline">
                                 Update Status
@@ -190,16 +201,13 @@ export default async function ({
                                     No handlers assigned
                                 </p>
                             ) : (
-                                incident.handlers.map((handler) => (
+                                incidentHandlers.map((handler) => (
                                     <div
                                         key={handler.id}
                                         className="flex items-center justify-between"
                                     >
                                         <span className="font-medium">
-                                            {handler.handlerId}
-                                        </span>
-                                        <span className="text-muted-foreground text-xs">
-                                            {handler.assignedAt.toLocaleDateString()}
+                                            {handler.name}
                                         </span>
                                     </div>
                                 ))

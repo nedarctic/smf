@@ -95,6 +95,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import { GripVerticalIcon, CircleCheckIcon, LoaderIcon, EllipsisVerticalIcon, Columns3Icon, ChevronDownIcon, PlusIcon, ChevronsLeftIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsRightIcon, TrendingUpIcon } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export const schema = z.object({
   id: z.string(),
@@ -128,11 +129,7 @@ function DragHandle({ id }: { id: number }) {
 }
 
 const columns: ColumnDef<Incident>[] = [
-  {
-    id: "incident",
-    header: "Incident",
-    cell: ({ row }) => <IncidentViewer item={row.original} />,
-  },
+  
   {
     accessorKey: "incidentIdDisplay",
     header: "Incident ID",
@@ -158,7 +155,7 @@ const columns: ColumnDef<Incident>[] = [
     accessorKey: "incidentDate",
     header: "Date",
     cell: ({ row }) =>
-      new Date(row.original.incidentDate).toLocaleDateString("en-GB", {day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC"}),
+      new Date(row.original.incidentDate).toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" }),
   },
   {
     accessorKey: "status",
@@ -175,8 +172,15 @@ const columns: ColumnDef<Incident>[] = [
   },
   {
     id: "actions",
-    cell: () => (
-      <Button variant="ghost" size="icon">
+    cell: ({ row }) => (
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={(e) => {
+          e.stopPropagation();
+          // open menu / dialog here
+        }}
+      >
         <EllipsisVerticalIcon />
       </Button>
     ),
@@ -184,16 +188,17 @@ const columns: ColumnDef<Incident>[] = [
 ]
 
 function DraggableRow({ row }: { row: Row<Incident> }) {
+  const router = useRouter();
+
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.original.id,
-  })
+  });
 
   return (
     <TableRow
-      data-state={row.getIsSelected() && "selected"}
-      data-dragging={isDragging}
       ref={setNodeRef}
-      className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80"
+      onClick={() => router.push(`/dashboard/incidents/${row.original.id}`)}
+      className="cursor-pointer"
       style={{
         transform: CSS.Transform.toString(transform),
         transition: transition,
@@ -205,7 +210,7 @@ function DraggableRow({ row }: { row: Row<Incident> }) {
         </TableCell>
       ))}
     </TableRow>
-  )
+  );
 }
 
 function IncidentViewer({ item }: { item: Incident }) {
@@ -224,7 +229,7 @@ function IncidentViewer({ item }: { item: Incident }) {
           <p><strong>Location:</strong> {item.location}</p>
           <p><strong>Status:</strong> {item.status}</p>
           <p><strong>Reported:</strong> {item.reporterType}</p>
-          <p><strong>Date:</strong> {new Date(item.incidentDate).toLocaleDateString("en-GB", {day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC"})}</p>
+          <p><strong>Date:</strong> {new Date(item.incidentDate).toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" })}</p>
         </div>
       </DrawerContent>
     </Drawer>
@@ -545,14 +550,6 @@ export function DataTable({
   )
 }
 
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-]
 
 const chartConfig = {
   desktop: {
@@ -621,7 +618,7 @@ function TableCellViewer({ item }: { item: Incident }) {
             <div>
               <Label>Date</Label>
               <div>
-                {new Date(item.incidentDate).toLocaleDateString("en-GB", {day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC"})}
+                {new Date(item.incidentDate).toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" })}
               </div>
             </div>
           </div>
