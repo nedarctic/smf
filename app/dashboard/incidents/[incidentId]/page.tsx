@@ -13,18 +13,14 @@ export default async function ({
     const { incidentId } = await params;
     const incident = await getIncidentDetails(incidentId);
     const handlers = await getHandlers();
-    const handlerIds = incident?.handlers;
+    const handlersIds = incident?.handlers;
 
-    const incidentHandlers = handlers.filter(handler => {
-        const handlers = [];
-        for(const id of handlerIds!){
-            if(handler.id == id.id) {
-                handlers.push(handler);
-            }
-        }
-        return handlers;
+    const incidentHandlers = handlersIds?.map(handlerId => {
+        return handlers.filter(handler => {
+            return handler.id == handlerId.handlerId
+        })[0]
     });
-
+    
     if (!incident) {
         return <p className="p-10">Incident not found</p>;
     }
@@ -188,7 +184,7 @@ export default async function ({
                         </CardContent>
                     </Card>
 
-                    
+
 
                     {/* Handlers */}
                     <Card>
@@ -201,7 +197,7 @@ export default async function ({
                                     No handlers assigned
                                 </p>
                             ) : (
-                                incidentHandlers.map((handler) => (
+                                incidentHandlers?.map((handler) => (
                                     <div
                                         key={handler.id}
                                         className="flex items-center justify-between"

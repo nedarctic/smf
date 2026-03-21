@@ -13,7 +13,6 @@ import { getServerSession } from "next-auth"
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   const session = await getServerSession(authOptions);
-  console.log("Session at the dashboard layout:", session);
 
   const {name, email} = session?.user;
 

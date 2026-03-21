@@ -161,16 +161,12 @@ export async function getCompanyId() {
         const session = await getServerSession(authOptions);
         const userId = session?.user.id;
 
-        console.log("user id:", userId);
-
         // 2. get company user object and destructure company id
         const user = await prisma.user.findUnique({
             where: { id: userId }
         })
 
         const { companyId } = user!;
-
-        console.log("company id", companyId)
 
         return { success: true, data: companyId };
     } catch (error) {
