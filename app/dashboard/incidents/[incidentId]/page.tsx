@@ -2,14 +2,13 @@ import { AppBreadcrumb } from "@/components/breadcrumb";
 import { getIncidentDetails } from "@/lib/helpers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 export default async function ({
-    params
+    params,
 }: {
-    params: Promise<{ incidentId: string }>
+    params: Promise<{ incidentId: string }>;
 }) {
-
     const { incidentId } = await params;
     const incident = await getIncidentDetails(incidentId);
 
@@ -18,146 +17,195 @@ export default async function ({
     }
 
     return (
-        <div className="flex flex-col items-center min-h-screen w-full px-10 py-16">
-            <div className="flex flex-col items-start gap-8 w-11/12">
+        <div className="w-full max-w-7xl mx-auto px-6 py-8 space-y-6">
 
-                <AppBreadcrumb
-                    items={[
-                        { label: "Home", href: "/dashboard" },
-                        { label: "Incidents", href: "/dashboard/incidents" },
-                        { label: "Incident details" },
-                    ]}
-                />
+            {/* Breadcrumb */}
+            <AppBreadcrumb
+                items={[
+                    { label: "Home", href: "/dashboard" },
+                    { label: "Incidents", href: "/dashboard/incidents" },
+                    { label: "Incident details" },
+                ]}
+            />
 
-                {/* HEADER */}
-                <div className="flex items-center justify-between w-full">
-                    <h1 className="text-2xl font-bold">
+            {/* Header */}
+            <div className="flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                    <h1 className="text-2xl font-semibold">
                         {incident.incidentIdDisplay}
                     </h1>
-                    <Badge variant="outline">
-                        {incident.status}
-                    </Badge>
+                    <p className="text-sm text-muted-foreground">
+                        Created {incident.createdAt.toLocaleString()}
+                    </p>
                 </div>
 
-                {/* MAIN GRID */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
+                <div className="flex items-center gap-2">
+                    <Badge variant="outline">{incident.status}</Badge>
+                </div>
+            </div>
 
-                    {/* LEFT: MAIN DETAILS */}
-                    <div className="lg:col-span-2 flex flex-col gap-6">
+            {/* Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Description</CardTitle>
-                            </CardHeader>
-                            <CardContent className="text-sm text-muted-foreground">
-                                {incident.description}
-                            </CardContent>
-                        </Card>
+                {/* Main content */}
+                <div className="lg:col-span-2 space-y-6">
 
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Incident Details</CardTitle>
-                            </CardHeader>
-                            <CardContent className="grid grid-cols-2 gap-4 text-sm">
+                    {/* Description */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Description</CardTitle>
+                        </CardHeader>
+                        <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                            {incident.description}
+                        </CardContent>
+                    </Card>
 
-                                <div>
-                                    <p className="text-muted-foreground">Category</p>
-                                    <p className="font-medium">{incident.category}</p>
+                    {/* Details */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Details</CardTitle>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-2 gap-6 text-sm">
+
+                            <div>
+                                <p className="text-muted-foreground">Category</p>
+                                <p className="font-medium">{incident.category}</p>
+                            </div>
+
+                            <div>
+                                <p className="text-muted-foreground">Location</p>
+                                <p className="font-medium">{incident.location}</p>
+                            </div>
+
+                            <div>
+                                <p className="text-muted-foreground">Incident Date</p>
+                                <p className="font-medium">
+                                    {incident.incidentDate.toLocaleDateString()}
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="text-muted-foreground">Reporter Type</p>
+                                <p className="font-medium">{incident.reporterType}</p>
+                            </div>
+
+                            {incident.involvedPeople && (
+                                <div className="col-span-2">
+                                    <p className="text-muted-foreground">Involved People</p>
+                                    <p className="font-medium">{incident.involvedPeople}</p>
                                 </div>
+                            )}
 
+                        </CardContent>
+                    </Card>
+                    {/* Timeline */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Timeline</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4 text-sm">
+
+                            <div>
+                                <p className="text-muted-foreground">Created</p>
+                                <p>{incident.createdAt.toLocaleString()}</p>
+                            </div>
+
+                            <div>
+                                <p className="text-muted-foreground">Updated</p>
+                                <p>{incident.updatedAt.toLocaleString()}</p>
+                            </div>
+
+                            {incident.closedAt && (
                                 <div>
-                                    <p className="text-muted-foreground">Location</p>
-                                    <p className="font-medium">{incident.location}</p>
+                                    <p className="text-muted-foreground">Closed</p>
+                                    <p>{incident.closedAt.toLocaleString()}</p>
                                 </div>
+                            )}
 
+                            {incident.deadlineAt && (
                                 <div>
-                                    <p className="text-muted-foreground">Incident Date</p>
-                                    <p className="font-medium">
-                                        {incident.incidentDate.toLocaleDateString()}
-                                    </p>
+                                    <p className="text-muted-foreground">Deadline</p>
+                                    <p>{incident.deadlineAt.toLocaleString()}</p>
                                 </div>
+                            )}
 
+                            {incident.duration && (
                                 <div>
-                                    <p className="text-muted-foreground">Reporter Type</p>
-                                    <p className="font-medium">{incident.reporterType}</p>
+                                    <p className="text-muted-foreground">Duration</p>
+                                    <p>{incident.duration}</p>
                                 </div>
+                            )}
 
-                                {incident.involvedPeople && (
-                                    <div className="col-span-2">
-                                        <p className="text-muted-foreground">Involved People</p>
-                                        <p className="font-medium">{incident.involvedPeople}</p>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Sidebar */}
+                <div className="space-y-6">
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Actions</CardTitle>
+                        </CardHeader>
+
+                        <CardContent className="flex flex-col gap-2">
+
+                            <Button variant="outline">
+                                Assign / Reassign Handler
+                            </Button>
+
+                            <Button variant="outline">
+                                Update Status
+                            </Button>
+
+                            <Button variant="outline">
+                                Update Deadline
+                            </Button>
+
+                            <Button variant="outline">
+                                Add Internal Note
+                            </Button>
+
+                            <Button variant="outline">
+                                Upload Evidence
+                            </Button>
+
+                            <Button variant="destructive">
+                                Close Incident
+                            </Button>
+
+                        </CardContent>
+                    </Card>
+
+                    
+
+                    {/* Handlers */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Handlers</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3 text-sm">
+                            {incident.handlers.length === 0 ? (
+                                <p className="text-muted-foreground">
+                                    No handlers assigned
+                                </p>
+                            ) : (
+                                incident.handlers.map((handler) => (
+                                    <div
+                                        key={handler.id}
+                                        className="flex items-center justify-between"
+                                    >
+                                        <span className="font-medium">
+                                            {handler.handlerId}
+                                        </span>
+                                        <span className="text-muted-foreground text-xs">
+                                            {handler.assignedAt.toLocaleDateString()}
+                                        </span>
                                     </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    {/* RIGHT: META + HANDLERS */}
-                    <div className="flex flex-col gap-6">
-
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Timeline</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-3 text-sm">
-
-                                <div>
-                                    <p className="text-muted-foreground">Created</p>
-                                    <p>{incident.createdAt.toLocaleString()}</p>
-                                </div>
-
-                                <div>
-                                    <p className="text-muted-foreground">Updated</p>
-                                    <p>{incident.updatedAt.toLocaleString()}</p>
-                                </div>
-
-                                {incident.closedAt && (
-                                    <div>
-                                        <p className="text-muted-foreground">Closed</p>
-                                        <p>{incident.closedAt.toLocaleString()}</p>
-                                    </div>
-                                )}
-
-                                {incident.deadlineAt && (
-                                    <div>
-                                        <p className="text-muted-foreground">Deadline</p>
-                                        <p>{incident.deadlineAt.toLocaleString()}</p>
-                                    </div>
-                                )}
-
-                                {incident.duration && (
-                                    <div>
-                                        <p className="text-muted-foreground">Duration</p>
-                                        <p>{incident.duration}</p>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Handlers</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-2 text-sm">
-                                {incident.handlers.length === 0 ? (
-                                    <p className="text-muted-foreground">No handlers assigned</p>
-                                ) : (
-                                    incident.handlers.map((handler) => (
-                                        <div
-                                            key={handler.id}
-                                            className="flex justify-between border-b pb-2"
-                                        >
-                                            <span>{handler.handlerId}</span>
-                                            <span className="text-muted-foreground">
-                                                {handler.assignedAt.toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                    ))
-                                )}
-                            </CardContent>
-                        </Card>
-
-                    </div>
+                                ))
+                            )}
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </div>

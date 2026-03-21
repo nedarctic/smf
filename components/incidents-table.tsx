@@ -46,8 +46,8 @@ export function IncidentsTable({ incidents }: { incidents: Incident[] }) {
           <TableRow
             key={incident.id}
             className="cursor-pointer hover:bg-muted"
-            // onClick={() => router.push(`/dashboard/incidents/${incident.id}`)}
-            onClick={() => handleOpen(incident.id)}
+            onClick={() => router.push(`/dashboard/incidents/${incident.id}`)}
+            // onClick={() => handleOpen(incident.id)}
           >
             <TableCell className="font-medium">
               {incident.incidentIdDisplay}
@@ -75,7 +75,7 @@ export function IncidentsTable({ incidents }: { incidents: Incident[] }) {
       </TableBody>
     </Table>
 
-    <Sheet open={open} onOpenChange={setOpen}>
+    {/* <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent className="w-[500px] sm:w-[600px] overflow-y-auto">
           <SheetHeader>
             <SheetTitle>Incident Details</SheetTitle>
@@ -85,7 +85,7 @@ export function IncidentsTable({ incidents }: { incidents: Incident[] }) {
             <IncidentDetails incidentId={selectedId} />
           )}
         </SheetContent>
-      </Sheet>
+      </Sheet> */}
       </>
   );
 }
