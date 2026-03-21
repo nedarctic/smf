@@ -11,17 +11,41 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { User } from "@/lib/generated/prisma/client";
+import { Incident, User } from "@/lib/generated/prisma/client";
+import { updateHandler } from "@/actions/incident.actions";
+import { useTransition } from "react";
 
 export function ReassignHandlerDialog({
   handlers,
   currentHandlers,
+  incident,
 }: {
   handlers: User[];
   currentHandlers: User[];
+  incident: Incident; // or Incident type
 }) {
   const [open, setOpen] = React.useState(false);
   const [selected, setSelected] = React.useState<string[]>([]);
+  const [pending, startTransition] = useTransition();
+
+  const handleUpdateHandler = () => {
+    startTransition(async () => {
+      try {
+
+        const handler = handlers.find(
+          (h) => h.id === selected[0]
+        );
+
+        if (!handler) return;
+
+        await updateHandler(incident, handler);
+
+        setOpen(false);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  };
 
   // ✅ Preselect current handlers when dialog opens
   React.useEffect(() => {
@@ -82,15 +106,10 @@ export function ReassignHandlerDialog({
             </Button>
 
             <Button
-              disabled={selected.length === 0}
-              onClick={() => {
-                // ✅ selected = array of handler IDs
-                console.log("Selected handlers:", selected);
-
-                setOpen(false);
-              }}
+              disabled={selected.length === 0 || pending}
+              onClick={handleUpdateHandler}
             >
-              Confirm
+              {pending ? "Updating..." : "Confirm"}
             </Button>
           </div>
         </div>

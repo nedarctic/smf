@@ -162,7 +162,7 @@ export default async function ({
 
                         <CardContent className="flex flex-col gap-2">
 
-                            <ReassignHandlerDialog currentHandlers={incidentHandlers!} handlers={handlers} />
+                            <ReassignHandlerDialog incident={incident} currentHandlers={incidentHandlers!} handlers={handlers} />
 
                             <UpdateStatusDialogue activeStatus={incident.status}/>
 

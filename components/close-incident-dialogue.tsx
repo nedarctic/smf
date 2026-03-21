@@ -10,8 +10,8 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar"
 import { Incident } from "@/lib/generated/prisma/client";
+import { useTransition } from "react";
 
 export function CloseIncidentDialogue({
     incident,
@@ -20,12 +20,13 @@ export function CloseIncidentDialogue({
 }) {
     const [open, setOpen] = React.useState(false);
     const [selected, setSelected] = React.useState<Incident>(incident);
+    const [pending, startTransition] = useTransition();
 
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline">
+                <Button variant="destructive">
                     Update deadline
                 </Button>
             </DialogTrigger>
@@ -53,6 +54,7 @@ export function CloseIncidentDialogue({
 
                         <Button
                             disabled={!selected}
+                            variant="destructive"
                             onClick={() => {
                                 // handle confirm logic here
                                 setOpen(false);
