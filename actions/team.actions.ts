@@ -5,6 +5,7 @@ import { UserRole } from "@/lib/generated/prisma/enums";
 import { generateToken, hashToken } from "@/lib/tokens";
 import { transporter } from "@/lib/mailer";
 import { z } from 'zod';
+import { getCompanyId } from "@/lib/helpers";
 
 export async function updateUserRole(
     userId: string,
@@ -45,30 +46,23 @@ export async function deactivateUser(userId: string) {
     }
 }
 
-const UserValidationSchema = z.object({
-    companyId: z.string(),
-    name: z.string().min(1, { message: "Member's name is required" }),
-    role: z.string(),
-
-})
-
 export async function inviteUser({
     email,
     name,
-    role,
-    companyId
 }: {
     email: string;
     name: string;
-    role: "Admin" | "Handler";
-    companyId: string;
 }) {
+
+    // get company id
+    const companyId = await getCompanyId()
+        .then(res => res.data!)
+
     // 1. Create user
     const user = await prisma.user.create({
         data: {
             email,
             name,
-            role,
             status: "Invited",
             companyId
         },
