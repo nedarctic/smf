@@ -1,7 +1,7 @@
 import { IncidentsTable } from "@/components/incidents-table"
 import { getPaginatedIncidents } from "@/lib/helpers";
 import { AppBreadcrumb } from "@/components/breadcrumb";
-import { SearchInput } from "@/components/search-input";
+import { SearchInput } from "@/components/search-input-incidents";
 import { TablePagination } from "@/components/table-pagination";
 
 export default async function IncidentsPage({ searchParams }: {

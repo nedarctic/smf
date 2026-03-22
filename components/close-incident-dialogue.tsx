@@ -27,7 +27,7 @@ export function CloseIncidentDialogue({
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button variant="destructive">
-                    Update deadline
+                    Delete Incident
                 </Button>
             </DialogTrigger>
 

@@ -36,7 +36,7 @@ enum UserRole {
 
 enum UserStatus {
   Active
-  Inactive
+  Invited
 }
 
 enum AttachmentUploader {
@@ -74,7 +74,7 @@ model User {
   email     String     @unique
   password  String?
   role      UserRole   @default(Handler)
-  status    UserStatus @default(Inactive)
+  status    UserStatus @default(Invited)
   createdAt DateTime   @default(now())
 
   company            Company           @relation(fields: [companyId], references: [id])

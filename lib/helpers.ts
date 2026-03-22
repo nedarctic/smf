@@ -430,3 +430,79 @@ export async function getIncidentHandler (handlerId: string) {
     });
     return handler;
 }
+
+export async function getPaginatedHandlers({
+    query,
+    sort,
+    page = 1,
+    pageSize = 5,
+}: {
+    query?: string;
+    sort?: "date" | "name";
+    page?: number;
+    pageSize?: number;
+} = {}) {
+
+    const res = await getCompanyId();
+    const companyId = res.data;
+
+    const handlers = await prisma.user.findMany({
+        where: { companyId: companyId, role: "Handler" },
+        include: {assignedIncidents: true},
+        orderBy: {createdAt: "desc"}
+    });
+
+    let filtered = handlers.filter(handler => {
+        if (!query) return true;
+
+        if (query === "inactive") {
+            return handler.status === "Inactive"
+        }
+
+        if (query === "unassigned") {
+            return handler.assignedIncidents.length === 0;
+        }
+
+        return handler.name!
+            .toLowerCase()
+            .includes(query.toLowerCase()) ||
+            handler.email
+                .toLowerCase()
+                .includes(query.toLowerCase())
+    });
+
+    if (sort) {
+        filtered = [...filtered].sort((a, b) => {
+            return sort === "name" ? a.name!
+                .localeCompare(b.name!) : a.createdAt.getTime() -
+            b.createdAt.getTime();
+        })
+    }
+
+    const total = filtered.length;
+    const start = (page - 1) * pageSize;
+    const paginated = filtered.slice(start, start + pageSize);
+
+    return {
+        data: paginated,
+        total,
+        totalPages: Math.ceil(total / pageSize)
+    }
+}
+
+export async function getUserById(userId: string) {
+  return prisma.user.findUnique({
+    where: { id: userId },
+  });
+}
+
+export async function getIncidentsByHandler(userId: string) {
+  const assignments = await prisma.incidentHandler.findMany({
+    where: { handlerId: userId },
+    include: {
+      incident: true,
+    },
+  });
+
+  return assignments.map((a) => a.incident);
+}

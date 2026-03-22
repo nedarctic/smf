@@ -19,22 +19,22 @@ export async function deleteIncident(incident: Incident) {
     }
 }
 
-export async function updateHandler(
+export async function updateHandlers(
   incident: Incident,
-  handler: User
+  handlerIds: string[]
 ) {
   try {
-    // Optional: clear existing handlers (if you want single-handler system)
+    // Remove existing handlers
     await prisma.incidentHandler.deleteMany({
-      where: { incidentId: incident.id }
+      where: { incidentId: incident.id },
     });
 
-    // Assign new handler
-    await prisma.incidentHandler.create({
-      data: {
+    // Insert all selected handlers
+    await prisma.incidentHandler.createMany({
+      data: handlerIds.map((id) => ({
         incidentId: incident.id,
-        handlerId: handler.id,
-      },
+        handlerId: id,
+      })),
     });
 
     return { success: true };

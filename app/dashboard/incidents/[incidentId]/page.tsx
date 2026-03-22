@@ -164,11 +164,9 @@ export default async function ({
 
                             <ReassignHandlerDialog incident={incident} currentHandlers={incidentHandlers!} handlers={handlers} />
 
-                            <UpdateStatusDialogue activeStatus={incident.status}/>
+                            <UpdateStatusDialogue incident={incident} activeStatus={incident.status}/>
 
-                            <UpdateDeadlineDialogue deadlineAt={incident.deadlineAt!} />
-
-                            <CloseIncidentDialogue incident={incident} />
+                            <UpdateDeadlineDialogue incident={incident} deadlineAt={incident.deadlineAt!} />
 
                         </CardContent>
                     </Card>

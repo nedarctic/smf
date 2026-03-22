@@ -14,15 +14,34 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { User } from "@/lib/generated/prisma/client";
 import {IncidentStatus} from '@/lib/generated/prisma/enums'
+import { updateIncidentStatus } from "@/actions/incident.actions";
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Incident } from "@/lib/generated/prisma/client";
 
 export function UpdateStatusDialogue({
     activeStatus,
+    incident
 }: {
-    activeStatus: string;
+    activeStatus: IncidentStatus;
+    incident: Incident
 }) {
+    const router = useRouter();
+    const [pending, startTransition] = useTransition();
     const [open, setOpen] = React.useState(false);
-    const [selected, setSelected] = React.useState<string>(activeStatus);
+    const [selected, setSelected] = React.useState<IncidentStatus>(activeStatus);
 
+    const handleUpdateStatus = () => {
+        startTransition(async () => {
+            try {
+                updateIncidentStatus(incident, selected);
+                setOpen(false);
+                router.refresh();
+            } catch (error){
+                console.log(error)
+            }
+        });
+    }
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -44,8 +63,8 @@ export function UpdateStatusDialogue({
                 {/* Scrollable middle */}
                 <div className="flex-1 overflow-y-auto px-6 py-4">
                     <RadioGroup
-                        value={selected || ""}
-                        onValueChange={setSelected}
+                        value={selected}
+                        onValueChange={(value) => setSelected(value as IncidentStatus)}
                         className="space-y-3"
                     >
                         {Object.values(IncidentStatus).map((status) => (
@@ -68,12 +87,9 @@ export function UpdateStatusDialogue({
 
                         <Button
                             disabled={!selected}
-                            onClick={() => {
-                                // handle confirm logic here
-                                setOpen(false);
-                            }}
+                            onClick={handleUpdateStatus}
                         >
-                            Confirm
+                            {pending ? "Uodating..." : "Confirm"}
                         </Button>
                     </div>
                 </div>

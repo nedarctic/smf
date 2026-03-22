@@ -10,20 +10,38 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { User } from "@/lib/generated/prisma/client";
-import { IncidentStatus } from '@/lib/generated/prisma/enums';
-import { Calendar } from "@/components/ui/calendar"
+import { Calendar } from "./ui/calendar";
+import { updateIncidentDeadline } from "@/actions/incident.actions";
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Incident } from "@/lib/generated/prisma/client";
 
 export function UpdateDeadlineDialogue({
     deadlineAt,
+    incident,
 }: {
     deadlineAt: Date;
+    incident: Incident;
 }) {
+    const router = useRouter();
+    const [pending, startTransition] = useTransition();
     const [open, setOpen] = React.useState(false);
-    const [selected, setSelected] = React.useState<Date>(deadlineAt);
-    const [date, setDate] = React.useState<Date | undefined>(new Date())
+    const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(deadlineAt);
+
+    const handleUpdateDeadline = () => {
+        if (!selectedDate) return;
+
+        startTransition(async () => {
+            try {
+                await updateIncidentDeadline(incident, selectedDate);
+
+                setOpen(false);
+                router.refresh();
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -43,12 +61,14 @@ export function UpdateDeadlineDialogue({
                     Select a deadline date to assign to this incident.
                 </DialogDescription>
                 <div className="flex flex-col items-center justify-center">
+
                     <Calendar
                         mode="single"
-                        selected={new Date(selected)}
-                        onSelect={setDate}
+                        selected={selectedDate}
+                        onSelect={setSelectedDate}
                         className="rounded-lg border"
                     />
+
                 </div>
                 {/* Footer */}
                 <div className="shrink-0 border-t p-4 bg-background">
@@ -58,13 +78,10 @@ export function UpdateDeadlineDialogue({
                         </Button>
 
                         <Button
-                            disabled={!date}
-                            onClick={() => {
-                                // handle confirm logic here
-                                setOpen(false);
-                            }}
+                            disabled={!selectedDate || pending}
+                            onClick={handleUpdateDeadline}
                         >
-                            Confirm
+                            {pending ? "Updating..." : "Confirm"}
                         </Button>
                     </div>
                 </div>
