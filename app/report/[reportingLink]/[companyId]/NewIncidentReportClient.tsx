@@ -2,8 +2,31 @@
 
 import { useActionState } from "react";
 import { CreateIncident } from "@/actions/report.actions";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+
+// shadcn components
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 type CreateIncidentState =
   | { success: false; error?: string }
@@ -26,179 +49,193 @@ export function NewIncidentReportClient({
 
   const [state, formAction, pending] = useActionState(
     CreateIncident,
-    initialState);
+    initialState
+  );
+
+  console.log("reporting link at the incident reporting page",
+    reportingLink
+  )
 
   const [reporterType, setReporterType] = useState<
     "Anonymous" | "Confidential" | null
   >(null);
 
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (state.success) setOpen(true);
+  }, [state.success]);
+
+  const copyToClipboard = (value: string) => {
+    navigator.clipboard.writeText(value);
+  };
+
   return (
-    <form
-      action={formAction}
-      className="min-h-screen w-full bg-white dark:bg-black px-6 py-24"
-    >
-      {/* reporterType is derived from UI state */}
-      <input type="hidden" name="reporterType" value={reporterType ?? ""} />
+    <>
+      <form
+        action={formAction}
+        className="min-h-screen w-full bg-white dark:bg-black px-6 py-24"
+      >
+        <input type="hidden" name="reporterType" value={reporterType ?? ""} />
 
-      <div className="max-w-3xl mx-auto space-y-16">
+        <div className="max-w-3xl mx-auto space-y-16">
 
-        {/* Header */}
-        <header className="space-y-4">
-          <h1 className="text-black dark:text-white text-3xl md:text-5xl font-light">
-            Report an Incident
-          </h1>
-          <p className="text-black/70 dark:text-white/70 text-base leading-relaxed">
-            Use this form to report misconduct, abuse, corruption, or other
-            unethical behavior.
-          </p>
-        </header>
+          {/* Header */}
+          <header className="space-y-4">
+            <h1 className="text-3xl md:text-5xl font-light">
+              Report an Incident
+            </h1>
+            <p className="text-muted-foreground">
+              Use this form to report misconduct, abuse, corruption, or other
+              unethical behavior.
+            </p>
+          </header>
 
-        {/* Reporter Type */}
-        <section className="space-y-6">
-          <h2 className="text-black dark:text-white text-xl font-semibold">
-            Would you like to report anonymously?
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <button
-              type="button"
-              onClick={() => setReporterType("Anonymous")}
-              className={`border-2 rounded-2xl p-6 text-left transition ${reporterType === "Anonymous"
-                ? "border-black dark:border-white"
-                : "border-black/30 dark:border-white/30"
-                }`}
-            >
-              <p className="font-semibold">Yes, report anonymously</p>
-              <p className="text-sm opacity-70">
-                No name or contact details will be collected.
-              </p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setReporterType("Confidential")}
-              className={`border-2 rounded-2xl p-6 text-left transition ${reporterType === "Confidential"
-                ? "border-black dark:border-white"
-                : "border-black/30 dark:border-white/30"
-                }`}
-            >
-              <p className="font-semibold">No, share my details confidentially</p>
-              <p className="text-sm opacity-70">
-                Your identity will only be visible to authorized handlers.
-              </p>
-            </button>
-          </div>
-        </section>
-
-        {/* Incident Details */}
-        <section className="space-y-8">
-          <select
-            name="category"
-            required
-            className="w-full border-2 border-black dark:border-white rounded-xl px-4 py-3 bg-transparent"
-          >
-            <option className="text-black font-bold" value="">Select incident category</option>
-            {categories.length ? categories.map(category => (<option key={category.id} className="text-black">{category.categoryName}</option>)) : ""}
-          </select>
-
-          <textarea
-            name="description"
-            rows={6}
-            required
-            placeholder="Describe the incident in detail"
-            className="w-full border-2 border-black dark:border-white rounded-xl px-4 py-3 bg-transparent"
-          />
-
-          <input
-            name="location"
-            required
-            placeholder="Where did the incident happen?"
-            className="w-full border-2 rounded-xl px-4 py-3 bg-transparent"
-          />
-
-          <input
-            name="involvedPeople"
-            placeholder="Who was involved?"
-            className="w-full border-2 rounded-xl px-4 py-3 bg-transparent"
-          />
-
-          <label htmlFor="incidentDate" className="text-sm font-normal text-black dark:text-white mb-3">When did this incident occur?</label>
-
-          <input
-            type="date"
-            name="incidentDate"
-            id="incidentDate"
-            required
-            className="w-full border-2 rounded-xl px-4 py-3 bg-transparent"
-          />
-
-          <input
-            name="duration"
-            placeholder="How long has this occurred?"
-            className="w-full border-2 rounded-xl px-4 py-3 bg-transparent"
-          />
-
-          <input
-            type="file"
-            name="files"
-            multiple
-            className="w-full text-sm text-black dark:text-white"
-          />
-        </section>
-
-        {/* Confidential Reporter */}
-        {reporterType === "Confidential" && (
+          {/* Reporter Type */}
           <section className="space-y-6">
-            <input
-              name="name"
-              placeholder="Full name"
-              className="w-full border-2 rounded-xl px-4 py-3 bg-transparent"
-            />
-            <input
-              name="email"
-              type="email"
-              placeholder="Email address"
-              className="w-full border-2 rounded-xl px-4 py-3 bg-transparent"
-            />
-            <input
-              name="phone"
-              placeholder="Phone number (optional)"
-              className="w-full border-2 rounded-xl px-4 py-3 bg-transparent"
-            />
+            <h2 className="text-xl font-semibold">
+              Would you like to report anonymously?
+            </h2>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card
+                onClick={() => setReporterType("Anonymous")}
+                className={`cursor-pointer border-2 ${
+                  reporterType === "Anonymous" ? "border-primary" : ""
+                }`}
+              >
+                <CardContent className="p-6 space-y-2">
+                  <p className="font-semibold">Yes, report anonymously</p>
+                  <p className="text-sm text-muted-foreground">
+                    No name or contact details will be collected.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card
+                onClick={() => setReporterType("Confidential")}
+                className={`cursor-pointer border-2 ${
+                  reporterType === "Confidential" ? "border-primary" : ""
+                }`}
+              >
+                <CardContent className="p-6 space-y-2">
+                  <p className="font-semibold">
+                    No, share my details confidentially
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Your identity will only be visible to authorized handlers.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </section>
-        )}
 
-        <button
-          type="submit"
-          disabled={!reporterType}
-          className="w-full rounded-full bg-black text-white dark:bg-white dark:text-black px-6 py-4 font-semibold disabled:opacity-50"
-        >
-          {pending ? "Submitting..." : "Submit report securely"}
-        </button>
+          {/* Incident Details */}
+          <section className="space-y-6">
+            <Select name="category" required>
+              <SelectTrigger>
+                <SelectValue placeholder="Select incident category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.categoryName}>
+                    {category.categoryName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-        {/* Confirmation */}
-        {state.success && (
-          <div className="border-2 border-black dark:border-white rounded-2xl p-6">
-            <p className="text-lg font-semibold">
-              Incident submitted successfully
-            </p>
+            <Textarea
+              name="description"
+              rows={6}
+              required
+              placeholder="Describe the incident in detail"
+            />
 
-            <p className="mt-4">
-              <strong>Incident ID:</strong> {state.incidentNumber}
-            </p>
+            <Input name="location" required placeholder="Where did the incident happen?" />
 
-            <p className="mt-4 text-red-600 dark:text-red-400 font-semibold">
-              Secret Code (save this now):
-            </p>
+            <Input name="involvedPeople" placeholder="Who was involved?" />
 
-            <p className="mt-1 text-xl tracking-widest">
-              {state.secretCode}
-            </p>
+            <div className="space-y-2">
+              <label className="text-sm">
+                When did this incident occur?
+              </label>
+              <Input type="date" name="incidentDate" required />
+            </div>
 
-            <Link className="mt- 6bg-black dark:bg-white text-white dark:text-black font-sm flex flex-col items-center justify-center rounded-md p-4" href={`/report/${reportingLink}/track`}>Go to tracking page</Link>
-          </div>
-        )}
-      </div>
-    </form>
+            <Input name="duration" placeholder="How long has this occurred?" />
+
+            <Input type="file" name="files" multiple />
+          </section>
+
+          {/* Confidential Reporter */}
+          {reporterType === "Confidential" && (
+            <section className="space-y-6">
+              <Input name="name" placeholder="Full name" />
+              <Input name="email" type="email" placeholder="Email address" />
+              <Input name="phone" placeholder="Phone number (optional)" />
+            </section>
+          )}
+
+          <Button
+            type="submit"
+            disabled={!reporterType}
+            className="w-full rounded-full py-6"
+          >
+            {pending ? "Submitting..." : "Submit report securely"}
+          </Button>
+        </div>
+      </form>
+
+      {/* Confirmation Dialog */}
+      {state.success && (
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent className="space-y-6">
+            <DialogHeader>
+              <DialogTitle>Incident submitted successfully</DialogTitle>
+              <DialogDescription>
+                Save your details below. You will need them to track your report.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border rounded-lg p-3">
+                <div>
+                  <p className="text-sm text-muted-foreground">Incident ID</p>
+                  <p className="font-semibold">{state.incidentNumber}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => copyToClipboard(state.incidentNumber)}
+                >
+                  Copy
+                </Button>
+              </div>
+
+              <div className="flex items-center justify-between border rounded-lg p-3">
+                <div>
+                  <p className="text-sm text-red-500">Secret Code</p>
+                  <p className="font-mono tracking-widest">
+                    {state.secretCode}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => copyToClipboard(state.secretCode)}
+                >
+                  Copy
+                </Button>
+              </div>
+            </div>
+
+            <Link href={`${reportingLink}/track`}>
+              <Button className="w-full">
+                Go to tracking page
+              </Button>
+            </Link>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 }
