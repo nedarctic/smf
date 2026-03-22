@@ -526,9 +526,15 @@ export async function getReportingPage() {
       where: { companyId },
     });
 
+    const categories = await prisma.category.findMany({
+      where: { companyId },
+      orderBy: { createdAt: "desc" },
+    });
+
     return {
       slug: company?.reportingLinkSlug ?? "",
       page,
+      categories,
     };
   } catch (error) {
     return {
