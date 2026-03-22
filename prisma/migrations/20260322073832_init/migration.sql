@@ -1,80 +1,20 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "IncidentStatus" AS ENUM ('New', 'InReview', 'Investigation', 'Resolved', 'Closed');
 
-  - You are about to drop the `Attachment` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Category` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Company` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Incident` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `IncidentHandler` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Message` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Reporter` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `ReportingPage` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `SecretCode` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
+-- CreateEnum
+CREATE TYPE "ReporterType" AS ENUM ('Anonymous', 'Confidential');
 
-*/
--- DropForeignKey
-ALTER TABLE "Attachment" DROP CONSTRAINT "Attachment_incidentId_fkey";
+-- CreateEnum
+CREATE TYPE "UserRole" AS ENUM ('Admin', 'Handler');
 
--- DropForeignKey
-ALTER TABLE "Category" DROP CONSTRAINT "Category_companyId_fkey";
+-- CreateEnum
+CREATE TYPE "UserStatus" AS ENUM ('Active', 'Invited', 'Inactive');
 
--- DropForeignKey
-ALTER TABLE "Incident" DROP CONSTRAINT "Incident_companyId_fkey";
+-- CreateEnum
+CREATE TYPE "AttachmentUploader" AS ENUM ('Reporter', 'Handler');
 
--- DropForeignKey
-ALTER TABLE "IncidentHandler" DROP CONSTRAINT "IncidentHandler_handlerId_fkey";
-
--- DropForeignKey
-ALTER TABLE "IncidentHandler" DROP CONSTRAINT "IncidentHandler_incidentId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Message" DROP CONSTRAINT "Message_incidentId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Message" DROP CONSTRAINT "Message_senderId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Reporter" DROP CONSTRAINT "Reporter_incidentId_fkey";
-
--- DropForeignKey
-ALTER TABLE "ReportingPage" DROP CONSTRAINT "ReportingPage_companyId_fkey";
-
--- DropForeignKey
-ALTER TABLE "SecretCode" DROP CONSTRAINT "SecretCode_incidentId_fkey";
-
--- DropForeignKey
-ALTER TABLE "User" DROP CONSTRAINT "User_companyId_fkey";
-
--- DropTable
-DROP TABLE "Attachment";
-
--- DropTable
-DROP TABLE "Category";
-
--- DropTable
-DROP TABLE "Company";
-
--- DropTable
-DROP TABLE "Incident";
-
--- DropTable
-DROP TABLE "IncidentHandler";
-
--- DropTable
-DROP TABLE "Message";
-
--- DropTable
-DROP TABLE "Reporter";
-
--- DropTable
-DROP TABLE "ReportingPage";
-
--- DropTable
-DROP TABLE "SecretCode";
-
--- DropTable
-DROP TABLE "User";
+-- CreateEnum
+CREATE TYPE "SenderType" AS ENUM ('Reporter', 'Handler');
 
 -- CreateTable
 CREATE TABLE "companies" (
@@ -94,10 +34,21 @@ CREATE TABLE "users" (
     "email" TEXT NOT NULL,
     "password" TEXT,
     "role" "UserRole" NOT NULL DEFAULT 'Handler',
-    "status" "UserStatus" NOT NULL DEFAULT 'Inactive',
+    "status" "UserStatus" NOT NULL DEFAULT 'Invited',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "InviteToken" (
+    "id" TEXT NOT NULL,
+    "userId" UUID NOT NULL,
+    "tokenHash" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "InviteToken_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -220,6 +171,9 @@ CREATE UNIQUE INDEX "categories_companyId_categoryName_key" ON "categories"("com
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "InviteToken" ADD CONSTRAINT "InviteToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "incidents" ADD CONSTRAINT "incidents_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

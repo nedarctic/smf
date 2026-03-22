@@ -25,9 +25,9 @@ export function SignupForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Create a new team meber</CardTitle>
+          <CardTitle className="text-xl">Add a new team member</CardTitle>
           <CardDescription>
-            Enter the new team member's email below to create their account
+            Enter the new team member's email below to send them an invite
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -47,24 +47,7 @@ export function SignupForm({
                 />
               </Field>
               <Field>
-                <Field className="grid grid-cols-2 gap-4">
-                  <Field>
-                    <FieldLabel htmlFor="password">Password</FieldLabel>
-                    <Input id="password" type="password" required />
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="confirm-password">
-                      Confirm Password
-                    </FieldLabel>
-                    <Input id="confirm-password" type="password" required />
-                  </Field>
-                </Field>
-                <FieldDescription>
-                  Must be at least 8 characters long.
-                </FieldDescription>
-              </Field>
-              <Field>
-                <Button type="submit">Create Account</Button>
+                <Button type="submit">Send invite</Button>
               </Field>
             </FieldGroup>
           </form>

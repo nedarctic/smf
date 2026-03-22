@@ -78,11 +78,22 @@ model User {
   status    UserStatus @default(Invited)
   createdAt DateTime   @default(now())
 
-  company            Company           @relation(fields: [companyId], references: [id])
-  assignedIncidents  IncidentHandler[]
-  messages           Message[]
+  company           Company           @relation(fields: [companyId], references: [id])
+  assignedIncidents IncidentHandler[]
+  messages          Message[]
+  tokens            InviteToken[]
 
   @@map("users")
+}
+
+model InviteToken {
+  id        String   @id @default(cuid())
+  userId    String   @db.Uuid
+  tokenHash String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Incident {
@@ -103,7 +114,7 @@ model Incident {
   closedAt          DateTime?
   duration          String?
 
-  company     Company          @relation(fields: [companyId], references: [id])
+  company     Company           @relation(fields: [companyId], references: [id])
   reporter    Reporter?
   handlers    IncidentHandler[]
   attachments Attachment[]
@@ -121,7 +132,7 @@ model Reporter {
   phone      String?
   createdAt  DateTime @default(now())
 
-  incident   Incident @relation(fields: [incidentId], references: [id])
+  incident Incident @relation(fields: [incidentId], references: [id])
 
   @@map("reporters")
 }
@@ -132,23 +143,22 @@ model IncidentHandler {
   handlerId  String   @db.Uuid
   assignedAt DateTime @default(now())
 
-  incident   Incident @relation(fields: [incidentId], references: [id])
-  handler    User     @relation(fields: [handlerId], references: [id])
+  incident Incident @relation(fields: [incidentId], references: [id])
+  handler  User     @relation(fields: [handlerId], references: [id])
 
   @@unique([incidentId, handlerId])
-
   @@map("incident_handlers")
 }
 
 model Attachment {
-  id         String              @id @default(uuid()) @db.Uuid
-  incidentId String              @db.Uuid
+  id         String             @id @default(uuid()) @db.Uuid
+  incidentId String             @db.Uuid
   uploadedBy AttachmentUploader
   fileName   String
   filePath   String
-  createdAt  DateTime            @default(now())
+  createdAt  DateTime           @default(now())
 
-  incident   Incident            @relation(fields: [incidentId], references: [id])
+  incident Incident @relation(fields: [incidentId], references: [id])
 
   @@map("attachments")
 }
@@ -159,7 +169,7 @@ model SecretCode {
   secretCodeHash String
   createdAt      DateTime @default(now())
 
-  incident       Incident @relation(fields: [incidentId], references: [id])
+  incident Incident @relation(fields: [incidentId], references: [id])
 
   @@map("secret_codes")
 }
@@ -170,22 +180,21 @@ model Category {
   categoryName String
   createdAt    DateTime @default(now())
 
-  company      Company  @relation(fields: [companyId], references: [id])
+  company Company @relation(fields: [companyId], references: [id])
 
   @@unique([companyId, categoryName])
-
   @@map("categories")
 }
 
 model ReportingPage {
-  id               String   @id @default(uuid()) @db.Uuid
-  companyId        String   @db.Uuid
+  id               String  @id @default(uuid()) @db.Uuid
+  companyId        String  @db.Uuid
   title            String?
   introContent     String?
   policyUrl        String?
   reportingPageUrl String?
 
-  company          Company  @relation(fields: [companyId], references: [id])
+  company Company @relation(fields: [companyId], references: [id])
 
   @@map("reporting_pages")
 }
@@ -198,8 +207,8 @@ model Message {
   content    String
   createdAt  DateTime   @default(now())
 
-  incident   Incident   @relation(fields: [incidentId], references: [id])
-  sender     User       @relation(fields: [senderId], references: [id])
+  incident Incident @relation(fields: [incidentId], references: [id])
+  sender   User     @relation(fields: [senderId], references: [id])
 
   @@map("messages")
 }
