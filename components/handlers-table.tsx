@@ -31,6 +31,7 @@ export function HandlersTable({ handlers }: { handlers: User[] }) {
           <TableHead>Name</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Status</TableHead>
+          <TableHead>Role</TableHead>
         </TableRow>
       </TableHeader>
 
@@ -51,6 +52,8 @@ export function HandlersTable({ handlers }: { handlers: User[] }) {
             <TableCell>{handler.email}</TableCell>
 
             <TableCell>{handler.status}</TableCell>
+
+            <TableCell>{handler.role}</TableCell>
             
           </TableRow>
         ))}

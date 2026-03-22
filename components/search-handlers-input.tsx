@@ -70,6 +70,13 @@ export function SearchHandlersInput () {
         router.replace(`${pathname}?${params.toString()}`);
     }
 
+    const handleIHandlersFilter = () => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("query", "handlers");
+        params.set("page", "1");
+        router.replace(`${pathname}?${params.toString()}`);
+    }
+
     return (
         <div className="flex flex-col 
         items-start sm:gap-6 gap-3">
@@ -88,7 +95,8 @@ export function SearchHandlersInput () {
                 variant={"outline"}
                 onClick={handleReset}                
                 >All</Button>
-                <Button onClick={handleDateSort}>Date</Button>
+                <Button onClick={handleIHandlersFilter}>Handlers</Button>
+                
                 <Button className="border-gray-500 
                 border-2" 
                 variant={"outline"}
@@ -100,6 +108,7 @@ export function SearchHandlersInput () {
                 variant={"outline"}
                 onClick={handleInactiveFilter}                
                 >Inactive</Button>
+                <Button onClick={handleDateSort}>Date</Button>
             </div>
             {/* <p className="text-black 
             dark:text-white

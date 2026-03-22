@@ -15,5 +15,6 @@ export default async function Proxy(
         const signInUrl = new URL("/login", req.url);
         return NextResponse.redirect(signInUrl)
     }
+
     return NextResponse.next();
 }

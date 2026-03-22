@@ -447,7 +447,7 @@ export async function getPaginatedHandlers({
     const companyId = res.data;
 
     const handlers = await prisma.user.findMany({
-        where: { companyId: companyId, role: "Handler" },
+        where: { companyId: companyId },
         include: {assignedIncidents: true},
         orderBy: {createdAt: "desc"}
     });
@@ -461,6 +461,10 @@ export async function getPaginatedHandlers({
 
         if (query === "unassigned") {
             return handler.assignedIncidents.length === 0;
+        }
+
+        if (query === "handlers") {
+            return handler.role === "Handler"
         }
 
         return handler.name!

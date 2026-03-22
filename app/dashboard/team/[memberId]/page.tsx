@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChangeUserRoleDialog } from "@/components/change-user-role-dialogue";
 import { DeactivateUserDialog } from "@/components/deactivate-user-dialogue";
 import Link from "next/link";
+import { ReinviteHandler } from "@/components/send-reinvite-dialogue";
 
 export default async function ({
   params,
@@ -144,6 +145,8 @@ export default async function ({
             <CardContent className="flex flex-col gap-2">
 
               <ChangeUserRoleDialog user={user} />
+
+              {user.status === "Inactive" && <ReinviteHandler user={user} />}
 
               <DeactivateUserDialog userId={user.id} />
 

@@ -1,9 +1,11 @@
-import { getPaginatedHandlers } from "@/lib/helpers";
+import { getCompanyId, getPaginatedHandlers } from "@/lib/helpers";
 import { AppBreadcrumb } from "@/components/breadcrumb";
 import { SearchHandlersInput } from "@/components/search-handlers-input";
 import { TablePagination } from "@/components/table-pagination";
 import { HandlersTable } from "@/components/handlers-table";
 import { AddNewMemberBtn } from "@/components/add-new-member-btn";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function IncidentsPage({ searchParams }: {
     searchParams:
@@ -13,6 +15,10 @@ export default async function IncidentsPage({ searchParams }: {
         page: string;
     }>
 }) {
+
+    const session = await getServerSession(authOptions);
+    const companyId = await getCompanyId().then(res => res.data!)
+    console.log("company id inside team page:", companyId);
 
     const { query, sort } = await searchParams;
     const page = (await searchParams).page ? (await searchParams).page : "1";
