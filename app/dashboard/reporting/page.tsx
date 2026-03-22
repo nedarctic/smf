@@ -1,8 +1,8 @@
-export default async function ReportingConfigPage () {
-    return (
-        <div className="flex flex-col items-center 
-        justify-center min-h-screen w-full">
-            <p className="text-sm font-bold">Reporting</p>
-        </div>
-    )
+import ReportingClient from "./ReportingClient";
+import { getReportingPage } from "@/lib/helpers";
+
+export default async function ReportingPage () {
+    const res = await getReportingPage();
+
+    return <ReportingClient data={res} />
 }

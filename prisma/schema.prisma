@@ -189,7 +189,7 @@ model Category {
 
 model ReportingPage {
   id               String  @id @default(uuid()) @db.Uuid
-  companyId        String  @db.Uuid
+  companyId        String  @unique @db.Uuid
   title            String?
   introContent     String?
   policyUrl        String?

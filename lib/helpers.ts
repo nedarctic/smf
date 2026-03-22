@@ -510,3 +510,32 @@ export async function getIncidentsByHandler(userId: string) {
 
   return assignments.map((a) => a.incident);
 }
+
+export async function getReportingPage() {
+  try {
+    const companyId = await getCompanyId().then(res => res.data!);
+
+    const company = await prisma.company.findUnique({
+      where: { id: companyId },
+      select: {
+        reportingLinkSlug: true,
+      },
+    });
+
+    const page = await prisma.reportingPage.findUnique({
+      where: { companyId },
+    });
+
+    return {
+      slug: company?.reportingLinkSlug ?? "",
+      page,
+    };
+  } catch (error) {
+    return {
+      error:
+        error instanceof Error
+          ? error.message
+          : "Unknown error",
+    };
+  }
+}

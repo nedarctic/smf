@@ -13,7 +13,7 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog";
 
-export default function SettingsPage() {
+export default function SettingsPage () {
     const [pending, startTransition] = useTransition();
 
     // Company
