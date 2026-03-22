@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
 import { hashToken } from "@/lib/tokens";
+import { revalidatePath } from "next/cache";
+import { inviteUser } from "@/actions/team.actions";
 
 export async function POST(req: Request) {
   const { token, password } = await req.json();
@@ -24,6 +26,8 @@ export async function POST(req: Request) {
   });
 
   await prisma.inviteToken.delete({ where: { id: invite.id } });
+
+  revalidatePath(`/dashboard/team/${invite.userId}`);
 
   return NextResponse.json({ success: true });
 }

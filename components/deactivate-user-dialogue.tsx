@@ -24,7 +24,7 @@ export function DeactivateUserDialog({ userId }: { userId: string }) {
       try {
         await deactivateUser(userId);
         setOpen(false);
-        router.push("/dashboard/team");
+        
       } catch (error) {
         console.log(error);
       }

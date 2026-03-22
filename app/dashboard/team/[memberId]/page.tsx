@@ -6,6 +6,8 @@ import { ChangeUserRoleDialog } from "@/components/change-user-role-dialogue";
 import { DeactivateUserDialog } from "@/components/deactivate-user-dialogue";
 import Link from "next/link";
 import { ReinviteHandler } from "@/components/send-reinvite-dialogue";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function ({
   params,
@@ -16,6 +18,9 @@ export default async function ({
 
   const user = await getUserById(memberId);
   const incidents = await getIncidentsByHandler(memberId);
+
+  const session = await getServerSession(authOptions);
+  const currentUserId = await session?.user.id;
 
   if (!user) {
     return <p className="p-10">User not found</p>;
@@ -137,21 +142,21 @@ export default async function ({
         <div className="space-y-6">
 
           {/* Actions */}
-          <Card>
+          {user.id !== currentUserId && <Card>
             <CardHeader>
               <CardTitle>Actions</CardTitle>
             </CardHeader>
 
             <CardContent className="flex flex-col gap-2">
 
-              <ChangeUserRoleDialog user={user} />
+              {user.status == "Active" && <ChangeUserRoleDialog user={user} />}
 
               {user.status === "Inactive" && <ReinviteHandler user={user} />}
-
-              <DeactivateUserDialog userId={user.id} />
+              
+              {user.status !== "Inactive" && <DeactivateUserDialog userId={user.id} />}
 
             </CardContent>
-          </Card>
+          </Card>}
 
         </div>
       </div>

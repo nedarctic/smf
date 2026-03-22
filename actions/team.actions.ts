@@ -6,6 +6,7 @@ import { generateToken, hashToken } from "@/lib/tokens";
 import { transporter } from "@/lib/mailer";
 import { z } from 'zod';
 import { getCompanyId } from "@/lib/helpers";
+import { revalidatePath } from "next/cache";
 
 export async function updateUserRole(
     userId: string,
@@ -35,6 +36,9 @@ export async function deactivateUser(userId: string) {
             data: { status: "Inactive" },
         });
 
+        await prisma.inviteToken.deleteMany({ where: { userId } });
+
+        revalidatePath(`/dashboard/team/${userId}`);
         return { success: true };
     } catch (error) {
         return {
@@ -57,6 +61,54 @@ export async function inviteUser({
     // get company id
     const companyId = await getCompanyId()
         .then(res => res.data!)
+
+    // check if user is already invited
+    const isUserInvited = await prisma.user.findUnique({
+        where: { email: email }
+    }).then(res => res?.status === "Invited")
+
+
+
+    if (isUserInvited) {
+
+        const userId = await prisma.user.findUnique({
+            where: { email: email }
+        }).then(res => res?.id!);
+
+        await prisma.inviteToken.deleteMany({ where: { userId } });
+
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+
+        if (!user) throw new Error("User not found");
+
+        const rawToken = generateToken();
+        const tokenHash = hashToken(rawToken);
+
+        // update the user status to invited
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { status: "Invited" },
+        })
+
+        await prisma.inviteToken.create({
+            data: {
+                userId,
+                tokenHash,
+                expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+            },
+        });
+
+        const link = `${process.env.NEXT_PUBLIC_APP_URL}/handler/invite/accept?token=${rawToken}`;
+
+        await transporter.sendMail({
+            from: `"SemaFacts" <${process.env.SMTP_USER}>`,
+            to: user.email,
+            subject: "Invite resent",
+            html: `<a href="${link}">Accept Invite</a>`,
+        });
+
+        return;
+    }
 
     // 1. Create user
     const user = await prisma.user.create({
@@ -116,6 +168,12 @@ export async function resendInvite(userId: string) {
     const rawToken = generateToken();
     const tokenHash = hashToken(rawToken);
 
+    // update the user status to invited
+    await prisma.user.update({
+        where: { id: user.id },
+        data: { status: "Invited" },
+    })
+
     await prisma.inviteToken.create({
         data: {
             userId,
@@ -132,4 +190,6 @@ export async function resendInvite(userId: string) {
         subject: "Invite resent",
         html: `<a href="${link}">Accept Invite</a>`,
     });
+
+    revalidatePath(`/dashboard/team/${user.id}`);
 }

@@ -26,6 +26,13 @@ import {
   AlertTitle
 } from "@/components/ui/alert"
 import { CheckCircle2, AlertCircle } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
 
 export function SignupForm({
   className,
@@ -38,6 +45,7 @@ export function SignupForm({
   const [email, setEmail] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>();
+  const [open, setOpen] = useState(false);
 
   const isFormValid = name.trim() !== "" && email.trim() !== "";
 
@@ -54,6 +62,7 @@ export function SignupForm({
         setSuccess("Invite successfully sent.");
         setName("");
         setEmail("");
+        setOpen(true);
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
@@ -66,26 +75,29 @@ export function SignupForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      {success && (
-        <Alert>
-          <CheckCircle2 className="h-4 w-4" />
-          <AlertTitle>Success</AlertTitle>
-          <AlertDescription>{success}</AlertDescription>
-        </Alert>
-      )}
 
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Success</DialogTitle>
+            <DialogDescription>
+              {success}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex justify-end">
+            <Button onClick={() => setOpen(false)}>
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Add a new team member</CardTitle>
           <CardDescription>
-            Enter the new team member's email below to send them an invite
+            Provide the new member's email below to send them an invite to join your team
           </CardDescription>
         </CardHeader>
         <CardContent>

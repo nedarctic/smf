@@ -2,12 +2,12 @@
 
 import * as React from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogDescription,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { User } from "@/lib/generated/prisma/client";
@@ -16,51 +16,56 @@ import { resendInvite } from "@/actions/team.actions";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-export function ReinviteHandler ({ user }: { user: User }) {
-  const router = useRouter();
-  const [pending, startTransition] = useTransition();
-  const [open, setOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<UserRole>(user.role);
+export function ReinviteHandler({ user }: { user: User }) {
+    const router = useRouter();
+    const [pending, startTransition] = useTransition();
+    const [open, setOpen] = React.useState(false);
+    const [selected, setSelected] = React.useState<UserRole>(user.role);
 
-  const handleReinviteMember = () => {
-    startTransition(async () => {
-      try {
-        await resendInvite(user.id);
-        setOpen(false);
-        router.refresh();
-      } catch (error) {
-        console.log(error);
-      }
-    });
-  };
+    const handleReinviteMember = () => {
+        startTransition(async () => {
+            try {
+                await resendInvite(user.id).then(res => {
+                    setOpen(false);
+                });
+                router.refresh();
+                
+                router.refresh();
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    };
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">Reinvite Member</Button>
-      </DialogTrigger>
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button variant="outline">Reinvite Member</Button>
+            </DialogTrigger>
 
-      <DialogContent className="flex flex-col max-h-[80vh] p-0 overflow-hidden">
+            <DialogContent className="flex flex-col max-h-[80vh] p-0 overflow-hidden">
 
-        <DialogHeader className="p-6 border-b">
-          <DialogTitle>Reinvite Member?</DialogTitle>
-        </DialogHeader>
+                <DialogHeader className="p-6 border-b">
+                    <DialogTitle>Reinvite Member?</DialogTitle>
+                </DialogHeader>
 
-        <DialogDescription className="sr-only">
-          Are you sure you want to send a reinvitation to {user.name}?
-        </DialogDescription>
+                <div className="px-6 py-4">
+                    <p>
+                        Are you sure you want to send a reinvitation to {user.name}?
+                    </p>
+                </div>
 
-        <div className="border-t p-4 flex justify-end gap-2">
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
+                <div className="border-t p-4 flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setOpen(false)}>
+                        Cancel
+                    </Button>
 
-          <Button onClick={handleReinviteMember} disabled={pending}>
-            {pending ? "Reinviting..." : "Reinvite"}
-          </Button>
-        </div>
+                    <Button onClick={handleReinviteMember} disabled={pending}>
+                        {pending ? "Reinviting..." : "Reinvite"}
+                    </Button>
+                </div>
 
-      </DialogContent>
-    </Dialog>
-  );
+            </DialogContent>
+        </Dialog>
+    );
 }
