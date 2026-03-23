@@ -19,6 +19,10 @@ export default function IncidentChat({
   const router = useRouter();
   const senderType = "Reporter";
 
+  console.log("Incident ID at the chat component:", incidentId);
+  console.log("Sender ID at the chat component:", senderId)
+  console.log("Incident name at the chat component:", incidentName)
+  
   const [isPending, startTransition] = useTransition();
   const [state, setState] = useState<{
     success?: boolean;
@@ -29,6 +33,8 @@ export default function IncidentChat({
 
   const [chatMessages, setChatMessages] = useState(initialMessages);
 
+  console.log("Initial messages:", initialMessages);
+
   useEffect(() => {
     setChatMessages(initialMessages);
   }, [initialMessages]);
@@ -38,6 +44,8 @@ export default function IncidentChat({
 
     if (!message) return;
 
+    console.log("Message inside submit handler", message)
+
     startTransition(async () => {
       try {
         await sendMessageAction(
@@ -45,7 +53,7 @@ export default function IncidentChat({
           senderId,
           message,
           senderType
-        );
+        ).then(() => console.log("Message sent successfully"));
 
         setState({ success: true });
         setMessage("");

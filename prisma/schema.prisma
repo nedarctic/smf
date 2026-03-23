@@ -134,6 +134,7 @@ model Reporter {
   createdAt  DateTime @default(now())
 
   incident Incident @relation(fields: [incidentId], references: [id])
+  messages Message[]
 
   @@map("reporters")
 }
@@ -203,13 +204,19 @@ model ReportingPage {
 model Message {
   id         String     @id @default(uuid()) @db.Uuid
   incidentId String     @db.Uuid
+
   senderType SenderType
-  senderId   String     @db.Uuid
+
+  userId     String?    @db.Uuid
+  reporterId String?    @db.Uuid
+
   content    String
   createdAt  DateTime   @default(now())
 
   incident Incident @relation(fields: [incidentId], references: [id])
-  sender   User     @relation(fields: [senderId], references: [id])
+
+  user     User?     @relation(fields: [userId], references: [id])
+  reporter Reporter? @relation(fields: [reporterId], references: [id])
 
   @@map("messages")
 }

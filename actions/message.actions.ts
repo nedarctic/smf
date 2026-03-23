@@ -13,6 +13,7 @@ export async function sendMessageAction(
     message: string,
     senderType: "Handler" | "Reporter"
 ) {
+    console.log("Executing send message action...")
     /* -----------------------------
      * Validate input
      * ----------------------------- */
@@ -20,13 +21,19 @@ export async function sendMessageAction(
         content: message.toString(),
     });
 
+    console.log("Parsed message data:", parsedData);
+
     if (!parsedData.success) {
+        console.log("Parsing message data failed");
+
         return {
             error: JSON.parse(parsedData.error.message)[0].message,
         };
     }
 
     const { content } = parsedData.data;
+
+    console.log("Parsed message content:", content)
 
     try {
         /* -----------------------------
@@ -35,7 +42,7 @@ export async function sendMessageAction(
         await prisma.message.create({
             data: {
                 incidentId,
-                senderId,
+                reporterId: senderId,
                 content,
                 senderType,
             },

@@ -28,10 +28,12 @@ export async function getAttachments(incidentId: string) {
 }
 
 export async function getInitialMessages(incidentId: string) {
-  return prisma.message.findMany({
+  const initialMessages = await prisma.message.findMany({
     where: { incidentId },
     orderBy: { createdAt: "asc" },
   });
+  console.log("Initial messages at the helper:", initialMessages);
+  return initialMessages;
 }
 
 /* -----------------------------
@@ -53,6 +55,7 @@ export default async function TrackIncidentPage() {
   const attachments = await getAttachments(incidentId);
   const initialMessages = await getInitialMessages(incidentId);
 
+  console.log("Initial messages at the server component:", initialMessages)
   /* -----------------------------
    * Sender handling
    * ----------------------------- */
