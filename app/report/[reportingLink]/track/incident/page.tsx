@@ -6,16 +6,13 @@ import { redirect, notFound } from "next/navigation";
 import IncidentChat from "@/components/incident/IncidentChat";
 import IncidentEvidence from "@/components/incident/IncidentEvidence";
 import IncidentOverview from "@/components/incident/IncidentOverview";
-
-/* -----------------------------
- * Data fetchers (Prisma)
- * ----------------------------- */
+import UploadEvidenceForm from "@/components/incident/upload-evidence-form";
 
 export async function getIncident(incidentId: string) {
   return prisma.incident.findUnique({
     where: { id: incidentId },
     include: {
-      reporter: true, // ✅ needed for senderId
+      reporter: true,
     },
   });
 }
@@ -36,10 +33,6 @@ export async function getInitialMessages(incidentId: string) {
   return initialMessages;
 }
 
-/* -----------------------------
- * Page
- * ----------------------------- */
-
 export default async function TrackIncidentPage() {
   const session = await getServerSession(authOptions);
 
@@ -55,30 +48,17 @@ export default async function TrackIncidentPage() {
   const attachments = await getAttachments(incidentId);
   const initialMessages = await getInitialMessages(incidentId);
 
-  console.log("Initial messages at the server component:", initialMessages)
-  /* -----------------------------
-   * Sender handling
-   * ----------------------------- */
-
-  // ⚠️ Important: your schema does NOT store reporterId on incident
-  // so we use the related reporter record
   const senderId =
     incident.reporter?.id ??
-    "anonymous-reporter"; // fallback if anonymous
+    "anonymous-reporter";
 
   const incidentName = incident.incidentIdDisplay;
-
-  console.log("Session:", session);
-  console.log("Incident:", incident);
-  console.log("Attachments:", attachments);
-
-  console.log("Incident reporter:", incident.reporter)
 
   return (
     <main className="min-h-screen w-full">
       <section className="min-h-screen bg-white dark:bg-black px-6">
         <div className="max-w-5xl mx-auto w-full flex flex-col gap-24 py-20">
-          
+
           <IncidentOverview incident={incident} />
 
           <IncidentChat
@@ -90,6 +70,7 @@ export default async function TrackIncidentPage() {
 
           <IncidentEvidence attachments={attachments} />
 
+          <UploadEvidenceForm incidentId={incident.id} />
         </div>
       </section>
     </main>

@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { generateIncidentNumber, generateSecretCode } from "@/lib/incident";
 import argon2 from "argon2";
 import { randomUUID } from "crypto";
-import { getCompanyId } from "@/lib/helpers";
 
 const PEPPER = process.env.INCIDENT_SECRET_PEPPER!;
 const DJANGO_API_URL = process.env.DJANGO_API_URL!; // e.g. http://localhost:8000/api
