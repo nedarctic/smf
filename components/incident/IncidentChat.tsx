@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useTransition, useState, useEffect } from "react";
+import React, { useTransition, useState, useEffect, useRef } from "react";
 import { sendMessageAction } from "@/actions/message.actions";
 import { useRouter } from "next/navigation";
 import { Message } from "@/lib/generated/prisma/client";
@@ -25,6 +25,7 @@ export default function IncidentChat({
     success?: boolean;
     error?: string;
   }>({});
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
   const [message, setMessage] = useState<string>("");
 
@@ -33,6 +34,12 @@ export default function IncidentChat({
   useEffect(() => {
     setChatMessages(initialMessages);
   }, [initialMessages]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [chatMessages]);
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -79,18 +86,24 @@ export default function IncidentChat({
       </header>
 
       <div className="flex flex-col items-center w-full">
-        <div className="border-2 border-black dark:border-white rounded-xl 
-        flex flex-col w-full min-h-125 p-8 space-y-3">
+        <div className="flex flex-col w-full min-h-125 space-y-3">
           <h1 className="text-2xl">
             {incidentName} Chat Room
           </h1>
 
-          <p>{senderType}</p>
+          <div
+            ref={scrollRef}
+            className="overflow-y-auto h-80 border-2 dark:border-white border-black rounded-lg p-3">
 
-          <div className="overflow-y-auto h-80 w-full">
             <ul className="text-sm space-y-3 mt-2">
               {chatMessages.map((msg) => {
                 const isMine = msg.senderType === senderType;
+                const messageDate = new Date(msg.createdAt);
+
+                const hours = messageDate.getHours().toString().padStart(2, "0");
+                const minutes = messageDate.getMinutes().toString().padStart(2, "0");
+
+                const time = `${hours}:${minutes}`;
 
                 return (
                   <li
@@ -99,14 +112,17 @@ export default function IncidentChat({
                   >
                     <div
                       className={`max-w-xs md:max-w-md px-3 py-2 rounded-lg text-sm ${isMine
-                          ? "bg-black text-white dark:bg-white dark:text-black"
-                          : "bg-gray-200 text-black dark:bg-zinc-800 dark:text-white"
+                        ? "bg-black text-white dark:bg-white dark:text-black"
+                        : "bg-gray-200 text-black dark:bg-zinc-800 dark:text-white"
                         }`}
                     >
                       <div className="text-[10px] opacity-70 mb-1">
                         {msg.senderType}
                       </div>
                       <div>{msg.content}</div>
+                      <div className="text-[10px] opacity-50 mt-1 text-right">
+                        {time}
+                      </div>
                     </div>
                   </li>
                 );

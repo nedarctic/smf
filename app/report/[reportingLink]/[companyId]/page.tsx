@@ -14,9 +14,23 @@ export default async function NewReportingPage({ params }: { params: Promise<{ c
 
     const categories = await getCategories(companyId);
 
+    const slaDays = await prisma.company.findUnique({
+        where: {id: companyId}
+    }).then(res => res?.slaDays);
+
     const reportingLink = await prisma.reportingPage.findUnique({
         where: {companyId: companyId}
     }).then(res => res?.reportingPageUrl)
 
-    return <NewIncidentReportClient reportingLink={reportingLink!} categories={categories} />
+    const logoUrl = await prisma.logo.findUnique({
+        where: {companyId: companyId}
+    }).then(res => res && res.logoUrl)
+
+    const reportingPageDetails = await prisma.reportingPage.findUnique({
+        where: {companyId: companyId}
+    })
+
+    console.log("Logo URL:", logoUrl)
+
+    return <NewIncidentReportClient reportingPageDetails={reportingPageDetails} logoUrl={logoUrl} slaDays={slaDays!} reportingLink={reportingLink!} categories={categories} />
 }

@@ -54,6 +54,7 @@ export default function UploadEvidenceForm({ incidentId }: { incidentId: string 
         setFiles(null);
         setIsSuccess(true);
         setDialogMessage("Upload successful");
+        router.refresh();
         setDialogOpen(true);
       } catch (err) {
         console.error(err);

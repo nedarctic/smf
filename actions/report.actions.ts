@@ -25,23 +25,18 @@ type CreateIncidentInput = {
     email?: string;
     phone?: string;
     companyId: string;
+    slaDays: string | null;
 };
 
 export async function CreateIncident(
     input: CreateIncidentInput
 ): Promise<CreateIncidentState> {
     try {
-        /* -----------------------------
-         * Resolve company
-         * ----------------------------- */
 
         if (!input.companyId) {
             return { success: false, error: "Company not resolved" };
         }
 
-        /* -----------------------------
-         * Generate identifiers
-         * ----------------------------- */
         const incidentId = randomUUID();
         const reporterId = randomUUID();
 
@@ -52,9 +47,11 @@ export async function CreateIncident(
         const secretCode = generateSecretCode();
         const secretCodeHash = await argon2.hash(secretCode + PEPPER);
 
-        /* -----------------------------
-         * Create Incident + Reporter
-         * ----------------------------- */
+        const slaDays = Number(input.slaDays ?? 7);
+
+        const deadlineAt = new Date();
+        deadlineAt.setDate(deadlineAt.getDate() + slaDays);
+
         await prisma.incident.create({
             data: {
                 id: incidentId,
@@ -69,6 +66,7 @@ export async function CreateIncident(
                 status: "New",
                 secretCodeHash,
                 duration: input.duration || null,
+                deadlineAt,
                 reporter: {
                     create: {
                         id: reporterId,
@@ -80,9 +78,6 @@ export async function CreateIncident(
             },
         }).then(res => console.log("New incident created successfully", res));
 
-        /* -----------------------------
-         * Upload attachments to Django
-         * ----------------------------- */
         if (input.files && input.files.length > 0) {
             for (const file of Array.from(input.files)) {
                 const uploadForm = new FormData();

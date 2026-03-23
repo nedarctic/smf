@@ -10,7 +10,7 @@ export function SiteHeader() {
         <div className="flex gap-4 lg:gap-6 items-center">
         <SidebarTrigger />
         
-        <h1 className="text-base font-medium">Whistleblowing Management Platform</h1>
+        <h1 className="py-2 lg:text-base text-sm font-medium">Whistleblowing Management Platform</h1>
         
         </div>
         <ThemeToggle />

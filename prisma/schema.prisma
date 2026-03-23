@@ -12,10 +12,6 @@ datasource db {
   provider = "postgresql"
 }
 
-//
-// ENUMS
-//
-
 enum IncidentStatus {
   New
   InReview
@@ -49,10 +45,6 @@ enum SenderType {
   Reporter
   Handler
 }
-
-//
-// MODELS
-//
 
 model Company {
   id                String   @id @default(uuid()) @db.Uuid
@@ -133,7 +125,7 @@ model Reporter {
   phone      String?
   createdAt  DateTime @default(now())
 
-  incident Incident @relation(fields: [incidentId], references: [id])
+  incident Incident  @relation(fields: [incidentId], references: [id])
   messages Message[]
 
   @@map("reporters")
@@ -202,16 +194,16 @@ model ReportingPage {
 }
 
 model Message {
-  id         String     @id @default(uuid()) @db.Uuid
-  incidentId String     @db.Uuid
+  id         String @id @default(uuid()) @db.Uuid
+  incidentId String @db.Uuid
 
   senderType SenderType
 
-  userId     String?    @db.Uuid
-  reporterId String?    @db.Uuid
+  userId     String? @db.Uuid
+  reporterId String? @db.Uuid
 
-  content    String
-  createdAt  DateTime   @default(now())
+  content   String
+  createdAt DateTime @default(now())
 
   incident Incident @relation(fields: [incidentId], references: [id])
 
@@ -219,4 +211,12 @@ model Message {
   reporter Reporter? @relation(fields: [reporterId], references: [id])
 
   @@map("messages")
+}
+
+model Logo {
+  id          String   @id @default(uuid()) @db.Uuid
+  companyId   String   @unique
+  logoUrl     String
+  downloadUrl String
+  createdAt   DateTime @default(now())
 }

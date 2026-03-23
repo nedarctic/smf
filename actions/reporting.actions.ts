@@ -6,6 +6,7 @@ import { getCompanyId } from "@/lib/helpers";
 import { revalidatePath } from "next/cache";
 
 import { Prisma } from "@/lib/generated/prisma/client";
+import { POST } from "@/app/api/handler/activate/route";
 
 export async function updateReportingPage({
   slug,
@@ -97,4 +98,70 @@ export async function createCategory({
           : "Unknown error",
     };
   }
+}
+
+export async function uploadLogo(file: File, companyId: string) {
+
+  const logo = await prisma.logo.findUnique({
+    where: { companyId: companyId }
+  })
+
+  if (logo) {
+
+    const uploadForm = new FormData();
+    uploadForm.append("file", file);
+
+    const res = await fetch(
+      `${process.env.DJANGO_API_URL}/api/logos/upload/`,
+      {
+        method: "POST",
+        body: uploadForm,
+      }
+    );
+
+    console.log("File successfully uploaded to Django:", res);
+
+    if (!res.ok) {
+      throw new Error("File upload failed");
+    }
+
+    const data = await res.json();
+    console.log("Response JSON:", data);
+
+    await prisma.logo.update({
+      where: { companyId: companyId },
+      data: {
+        logoUrl: data.file,
+        downloadUrl: data.download_url,
+      },
+    }).then(res => console.log("File path and name successfully saved to Prisma:", res));
+  }
+
+  const uploadForm = new FormData();
+  uploadForm.append("file", file);
+
+  const res = await fetch(
+    `${process.env.DJANGO_API_URL}/api/logos/upload/`,
+    {
+      method: "POST",
+      body: uploadForm,
+    }
+  );
+
+  console.log("File successfully uploaded to Django:", res);
+
+  if (!res.ok) {
+    throw new Error("File upload failed");
+  }
+
+  const data = await res.json();
+  console.log("Response JSON:", data);
+
+  await prisma.logo.create({
+    data: {
+      companyId: companyId,
+      logoUrl: data.file,
+      downloadUrl: data.download_url,
+    }
+  })
 }

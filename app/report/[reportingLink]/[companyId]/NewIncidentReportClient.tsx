@@ -5,7 +5,6 @@ import { CreateIncident } from "@/actions/report.actions";
 import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 
-// shadcn components
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,6 +27,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import Image from 'next/image';
 
 type CreateIncidentState =
   | { success: false; error?: string }
@@ -38,6 +38,9 @@ const initialState: CreateIncidentState = { success: false };
 export function NewIncidentReportClient({
   categories,
   reportingLink,
+  slaDays,
+  logoUrl,
+  reportingPageDetails,
 }: {
   categories: {
     id: string;
@@ -46,6 +49,16 @@ export function NewIncidentReportClient({
     createdAt: Date;
   }[],
   reportingLink: string;
+  slaDays: string | null;
+  logoUrl: string | null;
+  reportingPageDetails: {
+    id: string;
+    companyId: string;
+    title: string | null;
+    introContent: string | null;
+    policyUrl: string | null;
+    reportingPageUrl: string | null;
+  } | null
 }) {
 
   const [pending, startTransition] = useTransition();
@@ -63,7 +76,6 @@ export function NewIncidentReportClient({
 
   const [open, setOpen] = useState(false);
 
-  // form states
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
@@ -86,7 +98,7 @@ export function NewIncidentReportClient({
 
   const companyId = categories.map(ct => ct.companyId)
 
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitHandler = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     startTransition(async () => {
@@ -102,7 +114,8 @@ export function NewIncidentReportClient({
         name,
         email,
         phone,
-        companyId: companyId[0]
+        companyId: companyId[0],
+        slaDays,
       });
 
       setState(result);
@@ -119,14 +132,29 @@ export function NewIncidentReportClient({
         <div className="max-w-3xl mx-auto space-y-16">
 
           {/* Header */}
-          <header className="space-y-4">
-            <h1 className="text-3xl md:text-5xl font-light">
-              Report an Incident
-            </h1>
-            <p className="text-muted-foreground">
-              Use this form to report misconduct, abuse, corruption, or other
-              unethical behavior.
-            </p>
+          <header className="space-y-6 text-center">
+            {logoUrl && (
+              <div className="flex justify-center">
+                <Image
+                  src={logoUrl}
+                  width={100}
+                  height={100}
+                  priority
+                  unoptimized
+                  alt="Company logo"
+                  className="h-12 md:h-16 object-contain"
+                />
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <h1 className="text-3xl md:text-5xl font-light">
+                {reportingPageDetails?.title ?? "Report an Incident"}
+              </h1>
+              <p className="text-muted-foreground">
+                {reportingPageDetails?.introContent ?? "Use this form to report misconduct, abuse, corruption, or other unethical behavior."}
+              </p>
+            </div>
           </header>
 
           {/* Reporter Type */}
@@ -138,9 +166,8 @@ export function NewIncidentReportClient({
             <div className="grid md:grid-cols-2 gap-6">
               <Card
                 onClick={() => setReporterType("Anonymous")}
-                className={`cursor-pointer border-2 ${
-                  reporterType === "Anonymous" ? "border-primary" : ""
-                }`}
+                className={`cursor-pointer border-2 ${reporterType === "Anonymous" ? "border-primary" : ""
+                  }`}
               >
                 <CardContent className="p-6 space-y-2">
                   <p className="font-semibold">Yes, report anonymously</p>
@@ -152,9 +179,8 @@ export function NewIncidentReportClient({
 
               <Card
                 onClick={() => setReporterType("Confidential")}
-                className={`cursor-pointer border-2 ${
-                  reporterType === "Confidential" ? "border-primary" : ""
-                }`}
+                className={`cursor-pointer border-2 ${reporterType === "Confidential" ? "border-primary" : ""
+                  }`}
               >
                 <CardContent className="p-6 space-y-2">
                   <p className="font-semibold">

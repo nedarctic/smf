@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
+import { hostname } from "os";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    domains: ['127.0.0.1']
+  }
 };
 
 export default nextConfig;
