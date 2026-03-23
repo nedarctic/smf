@@ -16,5 +16,10 @@ export default async function Proxy(
         return NextResponse.redirect(signInUrl)
     }
 
+    if (pathname.startsWith("/handler/incidents") && (!token || token.type !== "handler")) {
+        const signInUrl = new URL("/handler/login", req.url);
+        return NextResponse.redirect(signInUrl)
+    }
+
     return NextResponse.next();
 }

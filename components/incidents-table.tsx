@@ -8,14 +8,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Sheet, 
-  SheetContent, 
-  SheetTitle,
-  SheetHeader
-} from "./ui/sheet";
-import type { Incident } from "@/lib/generated/prisma/client";
-import { IncidentDetails } from "./incident-details";
+} from "@/components/ui/table";import type { Incident } from "@/lib/generated/prisma/client";
 import { useState } from "react";
 
 export function IncidentsTable({ incidents }: { incidents: Incident[] }) {

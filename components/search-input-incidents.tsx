@@ -5,8 +5,8 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Button } from "./ui/button";
 
-export function SearchInput () {
-    
+export function SearchInput() {
+
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -15,17 +15,17 @@ export function SearchInput () {
     const debounceTime = 500;
 
     useEffect(() => {
-        
+
         const handler = setTimeout(() => {
             const params = new URLSearchParams(searchParams.toString())
-            
-            if(search) {
+
+            if (search) {
                 params.set("query", search);
                 params.set("page", "1")
             } else {
                 params.delete("query");
             }
-            
+
             router.replace(`${pathname}?${params.toString()}`);
         }, debounceTime)
 
@@ -84,27 +84,23 @@ export function SearchInput () {
             sm:grid-cols-3 md:grid-cols-4
             grid-cols-2 py-4 gap-4">
                 <Button className="border-gray-500 
-                border-2" 
-                variant={"outline"}
-                onClick={handleReset}                
+                border-2"
+                    variant={"outline"}
+                    onClick={handleReset}
                 >All</Button>
                 <Button onClick={handleDateSort}>Date</Button>
                 <Button className="border-gray-500 
-                border-2" 
-                variant={"outline"}
-                onClick={handleCategorySort}                
+                border-2"
+                    variant={"outline"}
+                    onClick={handleCategorySort}
                 >Category</Button>
                 <Button onClick={handleUnassignedFilter}>Unassigned</Button>
                 <Button className="border-gray-500 
-                border-2" 
-                variant={"outline"}
-                onClick={handleResolvedFilter}                
+                border-2"
+                    variant={"outline"}
+                    onClick={handleResolvedFilter}
                 >Resolved</Button>
             </div>
-            {/* <p className="text-black 
-            dark:text-white
-            font-normal text-md
-            ">Client component: {searchParams.get("query") || ""}</p> */}
         </div>
     )
 }

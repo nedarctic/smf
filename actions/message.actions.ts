@@ -42,7 +42,8 @@ export async function sendMessageAction(
         await prisma.message.create({
             data: {
                 incidentId,
-                reporterId: senderId,
+                userId: senderType === "Handler" ? senderId : null,
+                reporterId: senderType === "Reporter" ? senderId : null,
                 content,
                 senderType,
             },

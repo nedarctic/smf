@@ -29,7 +29,6 @@ export async function getInitialMessages(incidentId: string) {
     where: { incidentId },
     orderBy: { createdAt: "asc" },
   });
-  console.log("Initial messages at the helper:", initialMessages);
   return initialMessages;
 }
 
@@ -74,6 +73,7 @@ export default async function TrackIncidentPage() {
                 incidentName={incidentName}
                 initialMessages={initialMessages}
                 senderId={senderId}
+                senderType="Reporter"
               />
             </div>
 

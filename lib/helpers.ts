@@ -359,8 +359,8 @@ export async function getPaginatedIncidents({
 
     const incidents = await prisma.incident.findMany({
         where: { companyId: companyId },
-        include: {handlers: true},
-        orderBy: {createdAt: "desc"}
+        include: { handlers: true },
+        orderBy: { createdAt: "desc" }
     });
 
     let filtered = incidents.filter(incident => {
@@ -381,6 +381,9 @@ export async function getPaginatedIncidents({
                 .toLowerCase()
                 .includes(query.toLowerCase()) ||
             incident.status
+                .toLowerCase()
+                .includes(query.toLowerCase()) ||
+            incident.incidentIdDisplay
                 .toLowerCase()
                 .includes(query.toLowerCase())
     });
@@ -404,29 +407,29 @@ export async function getPaginatedIncidents({
     }
 }
 
-export async function getIncidentDetails (incidentId: string) {
+export async function getIncidentDetails(incidentId: string) {
     const incident = await prisma.incident.findUnique({
-        where: {id: incidentId},
-        include: {handlers: true}
+        where: { id: incidentId },
+        include: { handlers: true }
     });
 
     return incident;
 }
 
-export async function getHandlers () {
+export async function getHandlers() {
     const res = await getCompanyId();
     const companyId = res.data;
 
     const handlers = await prisma.user.findMany({
-        where: {companyId: companyId, role: "Handler"},
+        where: { companyId: companyId, role: "Handler" },
     })
 
     return handlers;
 }
 
-export async function getIncidentHandler (handlerId: string) {
+export async function getIncidentHandler(handlerId: string) {
     const handler = await prisma.user.findUnique({
-        where: {id: handlerId}
+        where: { id: handlerId }
     });
     return handler;
 }
@@ -448,8 +451,8 @@ export async function getPaginatedHandlers({
 
     const handlers = await prisma.user.findMany({
         where: { companyId: companyId },
-        include: {assignedIncidents: true},
-        orderBy: {createdAt: "desc"}
+        include: { assignedIncidents: true },
+        orderBy: { createdAt: "desc" }
     });
 
     let filtered = handlers.filter(handler => {
@@ -495,53 +498,53 @@ export async function getPaginatedHandlers({
 }
 
 export async function getUserById(userId: string) {
-  return prisma.user.findUnique({
-    where: { id: userId },
-  });
+    return prisma.user.findUnique({
+        where: { id: userId },
+    });
 }
 
 export async function getIncidentsByHandler(userId: string) {
-  const assignments = await prisma.incidentHandler.findMany({
-    where: { handlerId: userId },
-    include: {
-      incident: true,
-    },
-  });
+    const assignments = await prisma.incidentHandler.findMany({
+        where: { handlerId: userId },
+        include: {
+            incident: true,
+        },
+    });
 
-  return assignments.map((a) => a.incident);
+    return assignments.map((a) => a.incident);
 }
 
 export async function getReportingPage() {
-  try {
-    const companyId = await getCompanyId().then(res => res.data!);
+    try {
+        const companyId = await getCompanyId().then(res => res.data!);
 
-    const company = await prisma.company.findUnique({
-      where: { id: companyId },
-      select: {
-        reportingLinkSlug: true,
-      },
-    });
+        const company = await prisma.company.findUnique({
+            where: { id: companyId },
+            select: {
+                reportingLinkSlug: true,
+            },
+        });
 
-    const page = await prisma.reportingPage.findUnique({
-      where: { companyId },
-    });
+        const page = await prisma.reportingPage.findUnique({
+            where: { companyId },
+        });
 
-    const categories = await prisma.category.findMany({
-      where: { companyId },
-      orderBy: { createdAt: "desc" },
-    });
+        const categories = await prisma.category.findMany({
+            where: { companyId },
+            orderBy: { createdAt: "desc" },
+        });
 
-    return {
-      slug: company?.reportingLinkSlug ?? "",
-      page,
-      categories,
-    };
-  } catch (error) {
-    return {
-      error:
-        error instanceof Error
-          ? error.message
-          : "Unknown error",
-    };
-  }
+        return {
+            slug: company?.reportingLinkSlug ?? "",
+            page,
+            categories,
+        };
+    } catch (error) {
+        return {
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error",
+        };
+    }
 }
