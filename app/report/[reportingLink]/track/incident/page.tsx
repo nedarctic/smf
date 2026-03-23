@@ -69,6 +69,8 @@ export default async function TrackIncidentPage() {
   console.log("Incident:", incident);
   console.log("Attachments:", attachments);
 
+  console.log("Incident reporter:", incident.reporter)
+
   return (
     <main className="min-h-screen w-full">
       <section className="min-h-screen bg-white dark:bg-black px-6">

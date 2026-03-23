@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import React from "react";
 import { CreateIncident } from "@/actions/report.actions";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 
 // shadcn components
@@ -27,6 +27,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 
 type CreateIncidentState =
   | { success: false; error?: string }
@@ -36,7 +37,7 @@ const initialState: CreateIncidentState = { success: false };
 
 export function NewIncidentReportClient({
   categories,
-  reportingLink
+  reportingLink,
 }: {
   categories: {
     id: string;
@@ -47,10 +48,10 @@ export function NewIncidentReportClient({
   reportingLink: string;
 }) {
 
-  const [state, formAction, pending] = useActionState(
-    CreateIncident,
-    initialState
-  );
+  const [pending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const [state, setState] = useState<CreateIncidentState>(initialState);
 
   console.log("reporting link at the incident reporting page",
     reportingLink
@@ -62,6 +63,19 @@ export function NewIncidentReportClient({
 
   const [open, setOpen] = useState(false);
 
+  // form states
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const [location, setLocation] = useState("");
+  const [involvedPeople, setInvolvedPeople] = useState("");
+  const [incidentDate, setIncidentDate] = useState("");
+  const [duration, setDuration] = useState("");
+  const [files, setFiles] = useState<FileList | null>(null);
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+
   useEffect(() => {
     if (state.success) setOpen(true);
   }, [state.success]);
@@ -70,13 +84,37 @@ export function NewIncidentReportClient({
     navigator.clipboard.writeText(value);
   };
 
+  const companyId = categories.map(ct => ct.companyId)
+
+  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    startTransition(async () => {
+      const result = await CreateIncident({
+        reporterType: reporterType ?? "",
+        category,
+        description,
+        location,
+        involvedPeople,
+        incidentDate,
+        duration,
+        files,
+        name,
+        email,
+        phone,
+        companyId: companyId[0]
+      });
+
+      setState(result);
+    });
+  };
+
   return (
     <>
       <form
-        action={formAction}
+        onSubmit={submitHandler}
         className="min-h-screen w-full bg-white dark:bg-black px-6 py-24"
       >
-        <input type="hidden" name="reporterType" value={reporterType ?? ""} />
 
         <div className="max-w-3xl mx-auto space-y-16">
 
@@ -132,7 +170,7 @@ export function NewIncidentReportClient({
 
           {/* Incident Details */}
           <section className="space-y-6">
-            <Select name="category" required>
+            <Select onValueChange={setCategory} required>
               <SelectTrigger>
                 <SelectValue placeholder="Select incident category" />
               </SelectTrigger>
@@ -146,40 +184,76 @@ export function NewIncidentReportClient({
             </Select>
 
             <Textarea
-              name="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               rows={6}
               required
               placeholder="Describe the incident in detail"
             />
 
-            <Input name="location" required placeholder="Where did the incident happen?" />
+            <Input
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              required
+              placeholder="Where did the incident happen?"
+            />
 
-            <Input name="involvedPeople" placeholder="Who was involved?" />
+            <Input
+              value={involvedPeople}
+              onChange={(e) => setInvolvedPeople(e.target.value)}
+              placeholder="Who was involved?"
+            />
 
             <div className="space-y-2">
               <label className="text-sm">
                 When did this incident occur?
               </label>
-              <Input type="date" name="incidentDate" required />
+              <Input
+                type="date"
+                value={incidentDate}
+                onChange={(e) => setIncidentDate(e.target.value)}
+                required
+              />
             </div>
 
-            <Input name="duration" placeholder="How long has this occurred?" />
+            <Input
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              placeholder="How long has this occurred?"
+            />
 
-            <Input type="file" name="files" multiple />
+            <Input
+              type="file"
+              multiple
+              onChange={(e) => setFiles(e.target.files)}
+            />
           </section>
 
           {/* Confidential Reporter */}
           {reporterType === "Confidential" && (
             <section className="space-y-6">
-              <Input name="name" placeholder="Full name" />
-              <Input name="email" type="email" placeholder="Email address" />
-              <Input name="phone" placeholder="Phone number (optional)" />
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Full name"
+              />
+              <Input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                placeholder="Email address"
+              />
+              <Input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Phone number (optional)"
+              />
             </section>
           )}
 
           <Button
             type="submit"
-            disabled={!reporterType}
+            disabled={!reporterType || pending}
             className="w-full rounded-full py-6"
           >
             {pending ? "Submitting..." : "Submit report securely"}

@@ -38,7 +38,7 @@ export default function IncidentEvidence({
               className="border-b pb-4"
             >
               <Link
-                href={attachment.filePath} // ✅ direct Django file URL
+                href={`${process.env.DJANGO_API_URL}${attachment.filePath}`} // ✅ direct Django file URL
                 target="_blank"
                 className="text-sm font-medium hover:underline"
               >

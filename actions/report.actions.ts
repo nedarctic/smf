@@ -13,45 +13,41 @@ export type CreateIncidentState =
     | { success: false; error?: string }
     | { success: true; incidentNumber: string; secretCode: string };
 
+type CreateIncidentInput = {
+    reporterType: "Anonymous" | "Confidential" | "";
+    category: string;
+    description: string;
+    location: string;
+    involvedPeople?: string;
+    incidentDate: string;
+    duration?: string;
+    files: FileList | null;
+    name?: string;
+    email?: string;
+    phone?: string;
+    companyId: string;
+};
+
 export async function CreateIncident(
-    _prevState: CreateIncidentState,
-    formData: FormData
+    input: CreateIncidentInput
 ): Promise<CreateIncidentState> {
     try {
         /* -----------------------------
          * Resolve company
          * ----------------------------- */
-        const response = await getCompanyId();
-        const companyId = response?.data;
 
-        if (!companyId) {
+        if (!input.companyId) {
             return { success: false, error: "Company not resolved" };
         }
-
-        /* -----------------------------
-         * Extract form data
-         * ----------------------------- */
-        const reporterType = formData.get("reporterType") as
-            | "Anonymous"
-            | "Confidential";
-
-        const category = formData.get("category") as string;
-        const description = formData.get("description") as string;
-        const location = formData.get("location") as string;
-        const involvedPeople = formData.get("involvedPeople") as string | null;
-        const incidentDate = formData.get("incidentDate") as string;
-        const duration = formData.get("duration") as string;
-
-        const name = formData.get("name") as string | null;
-        const email = formData.get("email") as string | null;
-        const phone = formData.get("phone") as string | null;
-
-        const files = formData.getAll("files") as File[];
 
         /* -----------------------------
          * Generate identifiers
          * ----------------------------- */
         const incidentId = randomUUID();
+        const reporterId = randomUUID();
+
+        console.log("Random reporter UUID:", reporterId);
+        console.log("Random incident UUID", incidentId);
 
         const incidentNumber = generateIncidentNumber();
         const secretCode = generateSecretCode();
@@ -63,46 +59,45 @@ export async function CreateIncident(
         await prisma.incident.create({
             data: {
                 id: incidentId,
-                companyId,
+                companyId: input.companyId,
                 incidentIdDisplay: incidentNumber,
-                category,
-                description,
-                location,
-                involvedPeople,
-                incidentDate: new Date(incidentDate),
-                reporterType,
+                category: input.category,
+                description: input.description,
+                location: input.location,
+                involvedPeople: input.involvedPeople || null,
+                incidentDate: new Date(input.incidentDate),
+                reporterType: input.reporterType as "Anonymous" | "Confidential",
                 status: "New",
                 secretCodeHash,
-                duration,
-
-                reporter:
-                    reporterType === "Confidential"
-                        ? {
-                            create: {
-                                name,
-                                email,
-                                phone,
-                            },
-                        }
-                        : undefined,
+                duration: input.duration || null,
+                reporter: {
+                    create: {
+                        id: reporterId,
+                        name: input.name || null,
+                        email: input.email || null,
+                        phone: input.phone || null,
+                    },
+                }
             },
-        });
+        }).then(res => console.log("New incident created successfully", res));
 
         /* -----------------------------
-     * Upload attachments to Django
-     * ----------------------------- */
-        if (files.length > 0) {
-            for (const file of files) {
+         * Upload attachments to Django
+         * ----------------------------- */
+        if (input.files && input.files.length > 0) {
+            for (const file of Array.from(input.files)) {
                 const uploadForm = new FormData();
                 uploadForm.append("file", file);
 
                 const res = await fetch(
-                    `${process.env.DJANGO_API_URL}/api/upload/`,
+                    `${DJANGO_API_URL}/api/upload/`,
                     {
                         method: "POST",
                         body: uploadForm,
                     }
                 );
+
+                console.log("File successfully uploaded to Django:", res);
 
                 if (!res.ok) {
                     throw new Error("File upload failed");
@@ -118,7 +113,7 @@ export async function CreateIncident(
                         fileName: file.name,
                         filePath: data.file, // ← Django returns file path
                     },
-                });
+                }).then(res => console.log("File path and name successfully saved to Prisma:", res));
             }
         }
 

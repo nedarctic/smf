@@ -39,7 +39,7 @@ export async function sendMessageAction(
                 content,
                 senderType,
             },
-        });
+        }).then(res => console.log("Message successfully sent", res));;
 
         return { success: true };
     } catch (error) {
