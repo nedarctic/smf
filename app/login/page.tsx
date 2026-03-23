@@ -12,7 +12,7 @@ export default function LoginPage() {
           
           SemaFacts Admin Dashboard
         </Link>
-        <LoginForm />
+        <LoginForm userType={"Admin"}/>
       </div>
     </div>
   )

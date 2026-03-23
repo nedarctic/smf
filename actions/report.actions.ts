@@ -104,6 +104,7 @@ export async function CreateIncident(
                 }
 
                 const data = await res.json();
+                console.log("Response JSON:", data);
 
                 // Save reference in Prisma
                 await prisma.attachment.create({
@@ -111,7 +112,7 @@ export async function CreateIncident(
                         incidentId,
                         uploadedBy: "Reporter",
                         fileName: file.name,
-                        filePath: data.file, // ← Django returns file path
+                        filePath: data.download_url, // ← Django returns file path
                     },
                 }).then(res => console.log("File path and name successfully saved to Prisma:", res));
             }

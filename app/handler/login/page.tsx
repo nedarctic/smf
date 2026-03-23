@@ -6,7 +6,7 @@ export default function HandlerLoginPage () {
         items-center justify-center gap-6">
             <p className="text-lg font-bold">SemaFacts Handler Login</p>
             <div className="w-full lg:w-1/3">
-            <LoginForm />
+            <LoginForm userType={"Handler"}/>
             </div>
         </div>
     );

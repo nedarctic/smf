@@ -24,10 +24,15 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTransition } from "react";
 
+type LoginFormProps = React.ComponentProps<"div"> & {
+  userType: "Handler" | "Admin"
+};
+
 export function LoginForm({
   className,
+    userType,
   ...props
-}: React.ComponentProps<"div">) {
+}: LoginFormProps) {
 
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -42,11 +47,11 @@ export function LoginForm({
     startTransition(async () => {
 
       setError("");
-      const res = await signIn("credentials", {
+      const res = await signIn(userType === "Admin" ? "credentials" : "handler-access", {
         email,
         password,
         redirect: false,
-        callbackUrl: "/dashboard",
+        callbackUrl: userType === "Admin" ? "/dashboard" : "/handler/incidents",
       });
 
       console.log('Login res:', res);
@@ -57,7 +62,7 @@ export function LoginForm({
         return;
       }
 
-      router.push("/dashboard");
+      router.push(userType === "Admin" ? "/dashboard" : "/handler/incidents");
     });
 
   }
