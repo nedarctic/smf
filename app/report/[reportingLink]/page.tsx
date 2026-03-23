@@ -9,30 +9,27 @@ export default async function ReportingPage({
 }) {
   const { reportingLink } = await params;
 
-  // 1. Get company by slug
   const company = await prisma.company.findUnique({
     where: { reportingLinkSlug: reportingLink },
   });
 
   if (!company) return notFound();
 
-  // 2. Get reporting page linked to that company
   const reportingPage = await prisma.reportingPage.findUnique({
     where: { companyId: company.id },
   });
 
   if (!reportingPage) return notFound();
 
-  // 3. (Optional) Get categories like before
   const categories = await prisma.category.findMany({
     where: { companyId: company.id },
   });
 
-  console.log("company:", company);
-  console.log("reportingPage:", reportingPage);
-  console.log("categories:", categories);
-
-  // 4. Pass data to client component (similar to Drizzle version)
+  const logoUrl = await prisma.logo.findUnique({
+    where: {companyId: company.id}
+  }).then(res => res?.logoUrl)
+  
+  
   return (
     <ReportClient
       companyId={company.id}
@@ -41,7 +38,8 @@ export default async function ReportingPage({
       policyUrl={reportingPage.policyUrl ?? ""}
       reportingPageUrl={reportingPage.reportingPageUrl ?? ""}
       reportingPageLink={reportingLink}
-      categories={categories} // optional if needed
+      categories={categories}
+      logoUrl={logoUrl!}
     />
   );
 }

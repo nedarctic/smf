@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 type Category = {
   id: string;
@@ -24,6 +25,7 @@ export default function ReportClient({
   policyUrl,
   reportingPageUrl,
   categories,
+  logoUrl,
 }: {
   reportingPageLink?: string;
   companyId: string;
@@ -32,11 +34,26 @@ export default function ReportClient({
   policyUrl: string | null;
   reportingPageUrl: string | null;
   categories?: Category[];
+  logoUrl: string | null;
 }) {
   return (
     <main className="min-h-screen w-full bg-background">
       {/* Hero Section */}
       <section className="min-h-screen flex flex-col items-center justify-center text-center px-6">
+        {logoUrl && (
+          <div className="flex justify-center">
+            <Image
+              src={logoUrl}
+              width={100}
+              height={100}
+              priority
+              unoptimized
+              alt="Company logo"
+              className="h-12 md:h-16 object-contain"
+            />
+          </div>
+        )}
+
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-tight">
           {title || "Reporting Portal"}
         </h1>
