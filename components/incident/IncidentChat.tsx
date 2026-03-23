@@ -68,8 +68,9 @@ export default function IncidentChat({
   };
 
   return (
-    <section className="flex flex-col gap-12 border-t border-gray-200 dark:border-zinc-800 pt-16">
-      <header className="flex flex-col gap-4 max-w-2xl">
+    <section className="flex flex-col gap-12 border border-gray-200 
+    dark:border-zinc-800 rounded-2xl p-8 w-full">
+      <header className="flex flex-col gap-4 w-full">
         <h2 className="text-black dark:text-white text-2xl font-light">
           Secure communication
         </h2>
@@ -81,7 +82,8 @@ export default function IncidentChat({
       </header>
 
       <div className="flex flex-col items-center w-full p-6">
-        <div className="border-2 border-black dark:border-white rounded-xl flex flex-col w-full lg:w-1/2 min-h-[500px] p-8 space-y-3">
+        <div className="border-2 border-black dark:border-white rounded-xl 
+        flex flex-col w-full min-h-125 p-8 space-y-3">
           <h1 className="text-2xl">
             {incidentName} Chat Room
           </h1>
@@ -90,7 +92,8 @@ export default function IncidentChat({
             <ul className="text-sm space-y-2 mt-2">
               {chatMessages.map((msg) => (
                 <li key={msg.id}>
-                  <span className="bg-black text-white text-xs px-2 py-1 rounded-sm mr-2">
+                  <span className="bg-black text-white dark:bg-white dark:text-black 
+                  text-xs px-2 py-1 rounded-sm mr-2">
                     {msg.senderType}
                   </span>
                   {msg.content}

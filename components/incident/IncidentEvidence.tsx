@@ -15,7 +15,7 @@ export default function IncidentEvidence({
   attachments: Attachment[];
 }) {
   return (
-    <section className="flex flex-col gap-12 border-t border-gray-200 dark:border-zinc-800 pt-16">
+    <section className="flex flex-col gap-12 pt-16">
       <header className="flex flex-col gap-4 max-w-2xl">
         <h2 className="text-2xl font-light">
           Evidence and documents

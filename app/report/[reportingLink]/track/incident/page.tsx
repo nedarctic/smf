@@ -55,22 +55,44 @@ export default async function TrackIncidentPage() {
   const incidentName = incident.incidentIdDisplay;
 
   return (
-    <main className="min-h-screen w-full">
-      <section className="min-h-screen bg-white dark:bg-black px-6">
-        <div className="max-w-5xl mx-auto w-full flex flex-col gap-24 py-20">
+    <main className="min-h-screen w-full bg-white dark:bg-black">
+      <section className="px-4 md:px-6 py-8">
+        <div className="max-w-7xl mx-auto flex flex-col gap-8">
 
-          <IncidentOverview incident={incident} />
+          {/* TOP BAR (Compact Overview) */}
+          <div className="border rounded-2xl p-6 dark:border-zinc-800">
+            <IncidentOverview incident={incident} />
+          </div>
 
-          <IncidentChat
-            incidentId={incident.id}
-            incidentName={incidentName}
-            initialMessages={initialMessages}
-            senderId={senderId}
-          />
+          {/* MAIN WORKSPACE */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-8 items-start">
 
-          <IncidentEvidence attachments={attachments} />
+            {/* CHAT (PRIMARY AREA) */}
+            <div className="w-full">
+              <IncidentChat
+                incidentId={incident.id}
+                incidentName={incidentName}
+                initialMessages={initialMessages}
+                senderId={senderId}
+              />
+            </div>
 
-          <UploadEvidenceForm incidentId={incident.id} />
+            {/* SIDEBAR */}
+            <aside className="flex flex-col gap-6 sticky top-6">
+
+              {/* Evidence */}
+              <div className="border rounded-2xl p-5 dark:border-zinc-800">
+                <IncidentEvidence attachments={attachments} />
+              </div>
+
+              {/* Upload */}
+              <div>
+                <UploadEvidenceForm incidentId={incident.id} />
+              </div>
+
+            </aside>
+          </div>
+
         </div>
       </section>
     </main>
