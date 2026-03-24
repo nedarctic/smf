@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { hashPassword } from "@/lib/auth";
+import { hashPassword } from "@/lib/helpers";
 import { hashToken } from "@/lib/tokens";
 import { revalidatePath } from "next/cache";
 import { inviteUser } from "@/actions/team.actions";

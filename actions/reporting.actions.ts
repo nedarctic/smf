@@ -1,4 +1,3 @@
-// actions/reporting.actions.ts
 "use server";
 
 import { prisma } from "@/lib/prisma";
@@ -6,7 +5,7 @@ import { getCompanyId } from "@/lib/helpers";
 import { revalidatePath } from "next/cache";
 
 import { Prisma } from "@/lib/generated/prisma/client";
-import { getAuthTokens } from "@/lib/auth";
+import { getAccessToken, getAuthTokens } from "@/actions/auth";
 
 export async function updateReportingPage({
   slug,
@@ -101,37 +100,13 @@ export async function createCategory({
 }
 
 export async function uploadLogo(file: File, companyId: string) {
+  console.log("Executing upload logo server action");
 
-  const token = await getAuthTokens();
+  const token = await getAccessToken();
+  console.log("Access token inside uploadLogo action:", token);
 
-  const logo = await prisma.logo.findUnique({
-    where: { companyId: companyId }
-  })
-
-  if (logo) {
-
-    const uploadForm = new FormData();
-    uploadForm.append("file", file);
-
-    const res = await fetch(
-      `${process.env.DJANGO_API_URL}/api/logos/upload/`,
-      {
-        method: "POST",
-        body: uploadForm,
-      }
-    );
-    if (!res.ok) {
-      throw new Error("File upload failed");
-    }
-
-    const data = await res.json();
-    await prisma.logo.update({
-      where: { companyId: companyId },
-      data: {
-        logoUrl: data.file,
-        downloadUrl: data.download_url,
-      },
-    })
+  if (!token) {
+    throw new Error("No access token");
   }
 
   const uploadForm = new FormData();
@@ -142,22 +117,39 @@ export async function uploadLogo(file: File, companyId: string) {
     {
       method: "POST",
       headers: {
-        Authentication: `Bearer ${token}`
+        Authorization: `Bearer ${token}`, // ✅ FIXED
       },
       body: uploadForm,
     }
   );
+
   if (!res.ok) {
-    throw new Error("File upload failed");
+    const errorText = await res.text(); // ✅ DEBUG
+    console.error("Upload failed:", res.status, errorText);
+    throw new Error(`Upload failed: ${res.status}`);
   }
 
   const data = await res.json();
 
-  await prisma.logo.create({
-    data: {
-      companyId: companyId,
-      logoUrl: data.file,
-      downloadUrl: data.download_url,
-    }
-  })
+  const existing = await prisma.logo.findUnique({
+    where: { companyId },
+  });
+
+  if (existing) {
+    await prisma.logo.update({
+      where: { companyId },
+      data: {
+        logoUrl: data.file,
+        downloadUrl: data.download_url,
+      },
+    });
+  } else {
+    await prisma.logo.create({
+      data: {
+        companyId,
+        logoUrl: data.file,
+        downloadUrl: data.download_url,
+      },
+    });
+  }
 }

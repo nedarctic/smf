@@ -45,16 +45,30 @@ export default function UploadEvidenceForm({ incidentId }: { incidentId: string 
       if (!files) return;
 
       try {
-        await uploadAdditionalEvidence({
-          files,
-          incidentId,
-          uploaderType,
+        const formData = new FormData();
+
+        formData.append("incidentId", incidentId);
+        formData.append("uploaderType", uploaderType);
+
+        Array.from(files).forEach((file) => {
+          formData.append("files", file);
         });
+
+        const res = await fetch("/api/attachments/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await res.json();
+
+        if (!res.ok || !result.success) {
+          console.log("Upload unsuccessful:", result)
+          throw new Error(result.error || "Upload failed");
+        }
 
         setFiles(null);
         setIsSuccess(true);
         setDialogMessage("Upload successful");
-        router.refresh();
         setDialogOpen(true);
       } catch (err) {
         console.error(err);
@@ -63,6 +77,7 @@ export default function UploadEvidenceForm({ incidentId }: { incidentId: string 
         setDialogOpen(true);
       }
     });
+
     router.refresh();
   };
 
@@ -70,7 +85,6 @@ export default function UploadEvidenceForm({ incidentId }: { incidentId: string 
     setDialogOpen(open);
 
     if (!open) {
-      // Refresh route after dialog closes
       router.refresh();
     }
   };
@@ -89,7 +103,13 @@ export default function UploadEvidenceForm({ incidentId }: { incidentId: string 
           <form className="flex flex-col gap-3" onSubmit={handleUpload}>
             <Input
               type="file"
-              onChange={(e) => setFiles(e.target.files)}
+              multiple
+              onChange={(e) => {
+                const selectedFiles = e.target.files;
+                if (!selectedFiles) return;
+
+                setFiles(selectedFiles);
+              }}
             />
 
             <Button disabled={!files || pending} className="w-full">

@@ -19,8 +19,6 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog";
 
-import { uploadLogo } from "@/actions/reporting.actions";
-import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function UploadLogoForm({ companyId }: { companyId: string }) {
@@ -30,6 +28,9 @@ export default function UploadLogoForm({ companyId }: { companyId: string }) {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMessage, setDialogMessage] = useState("");
     const [isSuccess, setIsSuccess] = useState(false);
+
+    const MAX_SIZE = 10 * 1024 * 1024;
+    const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
     const router = useRouter();
 
@@ -41,13 +42,22 @@ export default function UploadLogoForm({ companyId }: { companyId: string }) {
             if (!file) return;
 
             try {
-                await uploadLogo(file, companyId);
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("companyId", companyId);
 
-                setFile(null);
-                setIsSuccess(true);
-                setDialogMessage("Upload successful");
+                const res = await fetch("/api/logos/upload", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                const result = await res.json();
+
+                if (!res.ok || !result.success) {
+                    throw new Error(result.error || "Upload failed");
+                }
+
                 router.refresh();
-                setDialogOpen(true);
             } catch (err) {
                 console.error(err);
                 setIsSuccess(false);
@@ -79,10 +89,26 @@ export default function UploadLogoForm({ companyId }: { companyId: string }) {
                 <CardContent className="flex flex-col gap-4">
                     <form className="flex flex-col gap-3" onSubmit={handleUpload}>
                         <Input
+                            ref={fileInputRef}
                             type="file"
                             accept="image/*"
                             onChange={(e) => {
                                 const selected = e.target.files?.[0] || null;
+
+                                if (selected && selected.size > MAX_SIZE) {
+                                    setIsSuccess(false);
+                                    setDialogMessage("File exceeds 10MB limit");
+                                    setDialogOpen(true);
+
+                                    // reset input
+                                    if (fileInputRef.current) {
+                                        fileInputRef.current.value = "";
+                                    }
+
+                                    setFile(null);
+                                    return;
+                                }
+
                                 setFile(selected);
                             }}
                             className="flex flex-col items-center justify-center"

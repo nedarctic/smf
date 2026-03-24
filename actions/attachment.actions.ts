@@ -1,5 +1,7 @@
+"use server"
+
 import { prisma } from '@/lib/prisma';
-import { getAccessToken } from '@/lib/auth';
+import { getAccessToken } from '@/actions/auth';
 
 export async function uploadAdditionalEvidence({
     files,

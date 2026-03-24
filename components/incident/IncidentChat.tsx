@@ -68,7 +68,7 @@ export default function IncidentChat({
   };
 
   return (
-    <section className="flex flex-col gap-12 border border-gray-200 
+    <section className="flex flex-col gap-18 border border-gray-200 
     dark:border-zinc-800 rounded-2xl p-8 w-full">
       <header className="flex flex-col gap-4 w-full">
         <h2 className="text-black dark:text-white text-2xl font-light">

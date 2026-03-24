@@ -1,10 +1,7 @@
-import bcrypt from "bcrypt";
+"use server"
+
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
-
-export function hashPassword(password: string) {
-    return bcrypt.hash(password, 10);
-}
 
 export async function getAuthTokens() {
     const username = process.env.DB_USER;
@@ -31,6 +28,8 @@ export async function getAuthTokens() {
 }
 
 export async function setTokens(access: string, refresh: string) {
+    "use server"
+    
     const cookieStore = await cookies();
 
     cookieStore.set("access_token", access, {
@@ -52,7 +51,6 @@ export async function getAccessToken(): Promise<string | null> {
     let accessToken = cookieStore.get("access_token")?.value;
     let refreshToken = cookieStore.get("refresh_token")?.value;
 
-    // Bootstrap tokens if missing
     if (!accessToken || !refreshToken) {
         const tokens = await getAuthTokens();
 
@@ -64,7 +62,7 @@ export async function getAccessToken(): Promise<string | null> {
 
     if (!accessToken) return null;
 
-    const isValid = isTokenValid(accessToken);
+    const isValid = await isTokenValid(accessToken);
 
     if (isValid) return accessToken;
 
@@ -85,7 +83,7 @@ export async function getAccessToken(): Promise<string | null> {
     return newAccessToken;
 }
 
-export function isTokenValid(token: string): boolean {
+export async function isTokenValid(token: string): Promise<boolean> {
     try {
         const decoded: any = jwt.decode(token);
         if (!decoded?.exp) return false;

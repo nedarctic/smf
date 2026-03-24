@@ -7,7 +7,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import bcrypt from "bcrypt";
 import { revalidatePath } from "next/cache";
-import { hashPassword } from "@/lib/auth";
+import { hashPassword } from "@/lib/helpers";
 
 export async function updateSettings({
   companyName,

@@ -5,7 +5,7 @@ type Attachment = {
   incidentId: string;
   uploadedBy: "Reporter" | "Handler" | string;
   fileName: string;
-  filePath: string; // now from Django
+  filePath: string;
   createdAt: Date;
 };
 
@@ -15,7 +15,7 @@ export default function IncidentEvidence({
   attachments: Attachment[];
 }) {
   return (
-    <section className="flex flex-col gap-12 pt-16">
+    <section className="flex flex-col gap-4">
       <header className="flex flex-col gap-4 max-w-2xl">
         <h2 className="text-2xl font-light">
           Evidence and documents
@@ -32,27 +32,32 @@ export default function IncidentEvidence({
         </p>
       ) : (
         <ul className="flex flex-col gap-6 max-w-3xl">
-          {attachments.map((attachment) => (
-            <li
-              key={attachment.id}
-              className="border-b pb-4"
-            >
-              <Link
-                href={`${attachment.filePath}`} // ✅ direct Django file URL
-                target="_blank"
-                className="text-sm font-medium hover:underline"
-              >
-                {attachment.fileName}
-              </Link>
+          {attachments.length === 0 ? (
+            <p className="text-gray-500 text-sm">
+              No supporting documents submitted.
+            </p>
+          ) : (
+            <div className="max-w-3xl max-h-80 overflow-y-auto pr-2">
+              <ul className="flex flex-col gap-6">
+                {attachments.map((attachment) => (
+                  <li key={attachment.id} className="border-b pb-4">
+                    <Link
+                      href={`/api/files?url=${encodeURIComponent(attachment.filePath)}`}
+                      target="_blank"
+                      className="text-sm font-medium hover:underline"
+                    >
+                      {attachment.fileName}
+                    </Link>
 
-              <div className="text-gray-500 text-xs">
-                Uploaded by {attachment.uploadedBy} ·{" "}
-                {new Date(
-                  attachment.createdAt
-                ).toLocaleDateString()}
-              </div>
-            </li>
-          ))}
+                    <div className="text-gray-500 text-xs">
+                      Uploaded by {attachment.uploadedBy} ·{" "}
+                      {new Date(attachment.createdAt).toLocaleDateString()}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </ul>
       )}
     </section>

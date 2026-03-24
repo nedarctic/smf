@@ -1,8 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "./prisma";
-import { DbNull } from "@prisma/client/runtime/client";
-
+import bcrypt from "bcrypt";
 
 function getDateRanges(days: number) {
     const now = new Date()
@@ -544,4 +543,8 @@ export async function getReportingPage() {
                     : "Unknown error",
         };
     }
+}
+
+export function hashPassword(password: string) {
+    return bcrypt.hash(password, 10);
 }

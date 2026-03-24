@@ -17,6 +17,8 @@ import {
     getIncidents
 } from '@/lib/helpers'
 
+import { getAccessToken } from "@/actions/auth";
+
 export default async function DashboardPage() {
 
     const res = await getCompanyId();
@@ -36,8 +38,6 @@ export default async function DashboardPage() {
 
     const incidents = await getIncidents(companyId, {limit: 15});
     const chartData = await groupIncidentsByDate(incidents);
-
-
 
     return (
         <div>

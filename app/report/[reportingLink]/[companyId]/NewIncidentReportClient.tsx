@@ -94,27 +94,46 @@ export function NewIncidentReportClient({
 
   const companyId = categories.map(ct => ct.companyId)
 
-  const submitHandler = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     startTransition(async () => {
-      const result = await CreateIncident({
-        reporterType: reporterType ?? "",
-        category,
-        description,
-        location,
-        involvedPeople,
-        incidentDate,
-        duration,
-        files,
-        name,
-        email,
-        phone,
-        companyId: companyId[0],
-        slaDays,
-      });
+      try {
+        const formData = new FormData();
 
-      setState(result);
+        formData.append("reporterType", reporterType ?? "");
+        formData.append("category", category);
+        formData.append("description", description);
+        formData.append("location", location);
+        formData.append("involvedPeople", involvedPeople);
+        formData.append("incidentDate", incidentDate);
+        formData.append("duration", duration);
+        formData.append("name", name);
+        formData.append("email", email);
+        formData.append("phone", phone);
+        formData.append("companyId", companyId[0]);
+        formData.append("slaDays", slaDays ?? "");
+
+        if (files) {
+          Array.from(files).forEach((file) => {
+            formData.append("files", file);
+          });
+        }
+
+        const res = await fetch("/api/incidents", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await res.json();
+
+        setState(result);
+      } catch (err) {
+        setState({
+          success: false,
+          error: "Failed to submit incident. Please try again.",
+        });
+      }
     });
   };
 
