@@ -4,9 +4,10 @@ import { prisma } from "@/lib/prisma";
 import { generateIncidentNumber, generateSecretCode } from "@/lib/incident";
 import argon2 from "argon2";
 import { randomUUID } from "crypto";
+import { getAccessToken } from "@/lib/auth";
 
 const PEPPER = process.env.INCIDENT_SECRET_PEPPER!;
-const DJANGO_API_URL = process.env.DJANGO_API_URL!; // e.g. http://localhost:8000/api
+const DJANGO_API_URL = process.env.DJANGO_API_URL!;
 
 export type CreateIncidentState =
     | { success: false; error?: string }
@@ -32,6 +33,8 @@ export async function CreateIncident(
     input: CreateIncidentInput
 ): Promise<CreateIncidentState> {
     try {
+
+        const token = await getAccessToken();
 
         if (!input.companyId) {
             return { success: false, error: "Company not resolved" };
@@ -83,6 +86,9 @@ export async function CreateIncident(
                     `${DJANGO_API_URL}/api/upload/`,
                     {
                         method: "POST",
+                        headers: {
+                            Authentication: `Bearer ${token}`
+                        },
                         body: uploadForm,
                     }
                 );

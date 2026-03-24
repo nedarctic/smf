@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from '@/lib/prisma';
+import { getAccessToken } from '@/lib/auth';
 
 export async function uploadAdditionalEvidence({
     files,
@@ -14,7 +15,7 @@ export async function uploadAdditionalEvidence({
 ) {
     try {
 
-        //store the evidence to django
+        const token = await getAccessToken();
 
         if (files && files.length > 0) {
             for (const file of Array.from(files)) {
@@ -25,6 +26,9 @@ export async function uploadAdditionalEvidence({
                     `${process.env.DJANGO_API_URL}/api/upload/`,
                     {
                         method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        },
                         body: uploadForm,
                     }
                 );
@@ -35,13 +39,13 @@ export async function uploadAdditionalEvidence({
 
                 const data = await res.json();
                 
-                // Save reference in Prisma
+                
                 await prisma.attachment.create({
                     data: {
                         incidentId,
                         uploadedBy: uploaderType,
                         fileName: file.name,
-                        filePath: data.download_url, // ← Django returns file path
+                        filePath: data.download_url,
                     },
                 })
             }

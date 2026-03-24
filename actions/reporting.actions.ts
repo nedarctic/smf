@@ -6,7 +6,7 @@ import { getCompanyId } from "@/lib/helpers";
 import { revalidatePath } from "next/cache";
 
 import { Prisma } from "@/lib/generated/prisma/client";
-import { POST } from "@/app/api/handler/activate/route";
+import { getAuthTokens } from "@/lib/auth";
 
 export async function updateReportingPage({
   slug,
@@ -53,7 +53,7 @@ export async function updateReportingPage({
     return { success: true };
 
   } catch (error) {
-    // ✅ Handle unique constraint violations explicitly
+    // Handle unique constraint violations explicitly
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
@@ -102,6 +102,8 @@ export async function createCategory({
 
 export async function uploadLogo(file: File, companyId: string) {
 
+  const token = await getAuthTokens();
+
   const logo = await prisma.logo.findUnique({
     where: { companyId: companyId }
   })
@@ -139,6 +141,9 @@ export async function uploadLogo(file: File, companyId: string) {
     `${process.env.DJANGO_API_URL}/api/logos/upload/`,
     {
       method: "POST",
+      headers: {
+        Authentication: `Bearer ${token}`
+      },
       body: uploadForm,
     }
   );
