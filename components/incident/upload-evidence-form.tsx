@@ -63,6 +63,7 @@ export default function UploadEvidenceForm({ incidentId }: { incidentId: string 
         setDialogOpen(true);
       }
     });
+    router.refresh();
   };
 
   const handleDialogClose = (open: boolean) => {
