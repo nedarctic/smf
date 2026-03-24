@@ -343,7 +343,7 @@ export function NewIncidentReportClient({
               </div>
             </div>
 
-            <Link href={`${reportingLink}/track`}>
+            <Link href={`${process.env.NEXT_PUBLIC_APP_URL}/${reportingLink}/track`}>
               <Button className="w-full">
                 Go to tracking page
               </Button>

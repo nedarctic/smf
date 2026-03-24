@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../lib/generated/prisma"
@@ -10,6 +5,166 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+model Company {
+  id                String         @id @default(uuid()) @db.Uuid
+  name              String?
+  reportingLinkSlug String?        @unique
+  createdAt         DateTime       @default(now())
+  slaDays           String?
+  categories        Category[]
+  incidents         Incident[]
+  reportingPages    ReportingPage?
+  users             User[]
+
+  @@map("companies")
+}
+
+model User {
+  id                String            @id @default(uuid()) @db.Uuid
+  companyId         String            @db.Uuid
+  name              String?
+  email             String            @unique
+  password          String?
+  role              UserRole          @default(Handler)
+  status            UserStatus        @default(Invited)
+  createdAt         DateTime          @default(now())
+  tokens            InviteToken[]
+  assignedIncidents IncidentHandler[]
+  messages          Message[]
+  company           Company           @relation(fields: [companyId], references: [id])
+
+  @@map("users")
+}
+
+model InviteToken {
+  id        String   @id @default(cuid())
+  userId    String   @db.Uuid
+  tokenHash String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Incident {
+  id                String            @id @default(uuid()) @db.Uuid
+  companyId         String            @db.Uuid
+  incidentIdDisplay String            @unique
+  category          String
+  description       String
+  location          String
+  involvedPeople    String?
+  incidentDate      DateTime
+  reporterType      ReporterType
+  status            IncidentStatus
+  secretCodeHash    String
+  deadlineAt        DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  closedAt          DateTime?
+  duration          String?
+  attachments       Attachment[]
+  handlers          IncidentHandler[]
+  company           Company           @relation(fields: [companyId], references: [id])
+  messages          Message[]
+  reporter          Reporter?
+  secretCodes       SecretCode[]
+
+  @@map("incidents")
+}
+
+model Reporter {
+  id         String    @id @default(uuid()) @db.Uuid
+  incidentId String    @unique @db.Uuid
+  name       String?
+  email      String?
+  phone      String?
+  createdAt  DateTime  @default(now())
+  messages   Message[]
+  incident   Incident  @relation(fields: [incidentId], references: [id])
+
+  @@map("reporters")
+}
+
+model IncidentHandler {
+  id         String   @id @default(uuid()) @db.Uuid
+  incidentId String   @db.Uuid
+  handlerId  String   @db.Uuid
+  assignedAt DateTime @default(now())
+  handler    User     @relation(fields: [handlerId], references: [id])
+  incident   Incident @relation(fields: [incidentId], references: [id])
+
+  @@unique([incidentId, handlerId])
+  @@map("incident_handlers")
+}
+
+model Attachment {
+  id         String             @id @default(uuid()) @db.Uuid
+  incidentId String             @db.Uuid
+  uploadedBy AttachmentUploader
+  fileName   String
+  filePath   String
+  createdAt  DateTime           @default(now())
+  incident   Incident           @relation(fields: [incidentId], references: [id])
+
+  @@map("attachments")
+}
+
+model SecretCode {
+  id             String   @id @default(uuid()) @db.Uuid
+  incidentId     String   @db.Uuid
+  secretCodeHash String
+  createdAt      DateTime @default(now())
+  incident       Incident @relation(fields: [incidentId], references: [id])
+
+  @@map("secret_codes")
+}
+
+model Category {
+  id           String   @id @default(uuid()) @db.Uuid
+  companyId    String   @db.Uuid
+  categoryName String
+  createdAt    DateTime @default(now())
+  company      Company  @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, categoryName])
+  @@map("categories")
+}
+
+model ReportingPage {
+  id               String  @id @default(uuid()) @db.Uuid
+  companyId        String  @unique @db.Uuid
+  title            String?
+  introContent     String?
+  policyUrl        String?
+  reportingPageUrl String?
+  company          Company @relation(fields: [companyId], references: [id])
+
+  @@map("reporting_pages")
+}
+
+model Message {
+  id         String     @id @default(uuid()) @db.Uuid
+  incidentId String     @db.Uuid
+  senderType SenderType
+  content    String
+  createdAt  DateTime   @default(now())
+  reporterId String?    @db.Uuid
+  userId     String?    @db.Uuid
+  incident   Incident   @relation(fields: [incidentId], references: [id])
+  reporter   Reporter?  @relation(fields: [reporterId], references: [id])
+  user       User?      @relation(fields: [userId], references: [id])
+
+  @@map("messages")
+}
+
+model Logo {
+  id          String   @id @default(uuid()) @db.Uuid
+  companyId   String   @unique
+  logoUrl     String
+  downloadUrl String
+  createdAt   DateTime @default(now())
 }
 
 enum IncidentStatus {
@@ -44,179 +199,4 @@ enum AttachmentUploader {
 enum SenderType {
   Reporter
   Handler
-}
-
-model Company {
-  id                String   @id @default(uuid()) @db.Uuid
-  name              String?
-  reportingLinkSlug String?  @unique
-  slaDays           String?
-  createdAt         DateTime @default(now())
-
-  users          User[]
-  incidents      Incident[]
-  categories     Category[]
-  reportingPages ReportingPage[]
-
-  @@map("companies")
-}
-
-model User {
-  id        String     @id @default(uuid()) @db.Uuid
-  companyId String     @db.Uuid
-  name      String?
-  email     String     @unique
-  password  String?
-  role      UserRole   @default(Handler)
-  status    UserStatus @default(Invited)
-  createdAt DateTime   @default(now())
-
-  company           Company           @relation(fields: [companyId], references: [id])
-  assignedIncidents IncidentHandler[]
-  messages          Message[]
-  tokens            InviteToken[]
-
-  @@map("users")
-}
-
-model InviteToken {
-  id        String   @id @default(cuid())
-  userId    String   @db.Uuid
-  tokenHash String
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Incident {
-  id                String         @id @default(uuid()) @db.Uuid
-  companyId         String         @db.Uuid
-  incidentIdDisplay String         @unique
-  category          String
-  description       String
-  location          String
-  involvedPeople    String?
-  incidentDate      DateTime
-  reporterType      ReporterType
-  status            IncidentStatus
-  secretCodeHash    String
-  deadlineAt        DateTime?
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  closedAt          DateTime?
-  duration          String?
-
-  company     Company           @relation(fields: [companyId], references: [id])
-  reporter    Reporter?
-  handlers    IncidentHandler[]
-  attachments Attachment[]
-  messages    Message[]
-  secretCodes SecretCode[]
-
-  @@map("incidents")
-}
-
-model Reporter {
-  id         String   @id @default(uuid()) @db.Uuid
-  incidentId String   @unique @db.Uuid
-  name       String?
-  email      String?
-  phone      String?
-  createdAt  DateTime @default(now())
-
-  incident Incident  @relation(fields: [incidentId], references: [id])
-  messages Message[]
-
-  @@map("reporters")
-}
-
-model IncidentHandler {
-  id         String   @id @default(uuid()) @db.Uuid
-  incidentId String   @db.Uuid
-  handlerId  String   @db.Uuid
-  assignedAt DateTime @default(now())
-
-  incident Incident @relation(fields: [incidentId], references: [id])
-  handler  User     @relation(fields: [handlerId], references: [id])
-
-  @@unique([incidentId, handlerId])
-  @@map("incident_handlers")
-}
-
-model Attachment {
-  id         String             @id @default(uuid()) @db.Uuid
-  incidentId String             @db.Uuid
-  uploadedBy AttachmentUploader
-  fileName   String
-  filePath   String
-  createdAt  DateTime           @default(now())
-
-  incident Incident @relation(fields: [incidentId], references: [id])
-
-  @@map("attachments")
-}
-
-model SecretCode {
-  id             String   @id @default(uuid()) @db.Uuid
-  incidentId     String   @db.Uuid
-  secretCodeHash String
-  createdAt      DateTime @default(now())
-
-  incident Incident @relation(fields: [incidentId], references: [id])
-
-  @@map("secret_codes")
-}
-
-model Category {
-  id           String   @id @default(uuid()) @db.Uuid
-  companyId    String   @db.Uuid
-  categoryName String
-  createdAt    DateTime @default(now())
-
-  company Company @relation(fields: [companyId], references: [id])
-
-  @@unique([companyId, categoryName])
-  @@map("categories")
-}
-
-model ReportingPage {
-  id               String  @id @default(uuid()) @db.Uuid
-  companyId        String  @unique @db.Uuid
-  title            String?
-  introContent     String?
-  policyUrl        String?
-  reportingPageUrl String?
-
-  company Company @relation(fields: [companyId], references: [id])
-
-  @@map("reporting_pages")
-}
-
-model Message {
-  id         String @id @default(uuid()) @db.Uuid
-  incidentId String @db.Uuid
-
-  senderType SenderType
-
-  userId     String? @db.Uuid
-  reporterId String? @db.Uuid
-
-  content   String
-  createdAt DateTime @default(now())
-
-  incident Incident @relation(fields: [incidentId], references: [id])
-
-  user     User?     @relation(fields: [userId], references: [id])
-  reporter Reporter? @relation(fields: [reporterId], references: [id])
-
-  @@map("messages")
-}
-
-model Logo {
-  id          String   @id @default(uuid()) @db.Uuid
-  companyId   String   @unique
-  logoUrl     String
-  downloadUrl String
-  createdAt   DateTime @default(now())
 }
