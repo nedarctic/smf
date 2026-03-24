@@ -34,8 +34,6 @@ export function IncidentDetails({
     }
     if (!incident) return <p className="p-4">Not found</p>;
 
-    console.log('incident inside sheet:', incident)
-
     return (
         <div className="mt-4 space-y-4 text-sm flex flex-col 
     items-start justify-start p-10">

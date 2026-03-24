@@ -57,9 +57,6 @@ export async function totalIncidentsTrend(companyId: string, days = 30) {
             createdAt: { gte: currentStart, lt: now },
         },
     })
-
-    console.log("current inside total incidents trend:", current)
-
     const previous = await prisma.incident.count({
         where: {
             companyId,

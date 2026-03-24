@@ -45,11 +45,7 @@ export default function IncidentChat({
     e.preventDefault();
 
     if (!message) return;
-
-    console.log("Message inside submit handler", message)
-
     startTransition(async () => {
-      console.log("Sender type:", senderType)
 
       try {
         await sendMessageAction(
@@ -57,7 +53,7 @@ export default function IncidentChat({
           senderId,
           message,
           senderType
-        ).then(() => console.log("Message sent successfully"));
+        )
 
         setState({ success: true });
         setMessage("");

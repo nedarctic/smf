@@ -30,7 +30,5 @@ export default async function NewReportingPage({ params }: { params: Promise<{ c
         where: {companyId: companyId}
     })
 
-    console.log("Logo URL:", logoUrl)
-
     return <NewIncidentReportClient reportingPageDetails={reportingPageDetails} logoUrl={logoUrl} slaDays={slaDays!} reportingLink={reportingLink!} categories={categories} />
 }

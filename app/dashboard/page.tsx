@@ -23,7 +23,7 @@ export default async function DashboardPage() {
     const companyId = res.data!
 
     const total_incidents = await totalIncidents(companyId);
-    console.log("total incidents at the dashboard page:", total_incidents);
+    
     const total_open_incidents = await totalOpenIncidents(companyId);
     const SLA_compliance = await SLACompliance(companyId);
     const unassigned_incidents = await unassignedIncidents(companyId);

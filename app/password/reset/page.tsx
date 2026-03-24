@@ -30,14 +30,14 @@ export default function AcceptInvitePage() {
             setError("Password at least 6 characters long");
             return;
         }
-        const res = await fetch("/api/handler/activate", {
+        const res = await fetch("/api/admin/password", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token, password }),
         });
 
         if (res.ok) {
-            router.push("/handler/invite/accept/complete");
+            router.push("/password/reset/complete");
         } else {
             alert("Activation failed");
         }
@@ -46,9 +46,9 @@ export default function AcceptInvitePage() {
     return (
         <div className="flex flex-col items-center justify-center 
         w-full min-h-screen gap-4 py-16">
-            <p className="text-xl font-bold">SemaFacts Account Activation</p>
+            <p className="text-xl font-bold">SemaFacts Account Password Reset</p>
             <form className="flex flex-col gap-6 lg:w-1/3 w-full" onSubmit={handleSubmit}>
-                <h1>Set password to activate your SemaFacts account.</h1>
+                <h1>Reset your SemaFacts account password.</h1>
                 <FieldGroup>
                     <Field>
                         <div className="flex items-center">
@@ -69,7 +69,7 @@ export default function AcceptInvitePage() {
                 </FieldGroup>
                 {error && (<p className="text-sm font-normal 
                 text-red-600">{error}</p>)}
-                <Button className="w-full" type="submit">Activate</Button>
+                <Button className="w-full" type="submit">Reset</Button>
             </form>
         </div>
     );

@@ -149,8 +149,6 @@ export async function inviteUser({
       <a href="${link}">Accept Invite</a>
     `,
         });
-
-        console.log("Email sent:", info.messageId);
     } catch (error) {
         console.error("Email failed:", error);
     }
@@ -193,3 +191,44 @@ export async function resendInvite(userId: string) {
 
     revalidatePath(`/dashboard/team/${user.id}`);
 }
+
+export async function sendPasswordResetLink (email: string) {
+
+    const user = await prisma.user.findUnique({
+        where: {email: email}
+    });
+
+    if(!user) return;
+
+    const userId = user.id;
+    await prisma.inviteToken.deleteMany({ where: { userId } });
+
+    const rawToken = generateToken();
+    const tokenHash = hashToken(rawToken);
+
+    // update the user status to invited
+    await prisma.user.update({
+        where: { id: userId },
+        data: { status: "Invited" },
+    })
+
+    await prisma.inviteToken.create({
+        data: {
+            userId,
+            tokenHash,
+            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        },
+    });
+
+    const link = `${process.env.NEXT_PUBLIC_APP_URL}/password/reset?token=${rawToken}`;
+
+    await transporter.sendMail({
+        from: `"SemaFacts" <${process.env.SMTP_USER}>`,
+        to: user.email,
+        subject: "Password reset",
+        html: `<a href="${link}">Click this link to reset your account password</a>`,
+    });
+
+    revalidatePath(`/dashboard/team/${user.id}`);
+}
+

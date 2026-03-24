@@ -66,10 +66,6 @@ export function NewIncidentReportClient({
 
   const [state, setState] = useState<CreateIncidentState>(initialState);
 
-  console.log("reporting link at the incident reporting page",
-    reportingLink
-  )
-
   const [reporterType, setReporterType] = useState<
     "Anonymous" | "Confidential" | null
   >(null);

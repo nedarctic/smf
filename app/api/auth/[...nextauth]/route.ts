@@ -21,13 +21,9 @@ export const authOptions: AuthOptions = {
 
                 if (!user || user.role !== "Admin") return null;
 
-                console.log("admin details at the auth api fetched from db:", user);
-
                 const passwordMatch = await bcrypt.compare(credentials.password, user.password!);
                 
                 if (!passwordMatch) return null;
-
-                console.log('password matched!', passwordMatch);
 
                 return {
                     id: user.id.toString(),
@@ -92,7 +88,6 @@ export const authOptions: AuthOptions = {
                     );
 
                     if (!isValid) {
-                        console.log("Invalid secret code attempt:", credentials.incidentId);
                         return null;
                     }
                 } catch (err) {

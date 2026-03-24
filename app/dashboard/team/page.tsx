@@ -18,7 +18,6 @@ export default async function IncidentsPage({ searchParams }: {
 
     const session = await getServerSession(authOptions);
     const companyId = await getCompanyId().then(res => res.data!)
-    console.log("company id inside team page:", companyId);
 
     const { query, sort } = await searchParams;
     const page = (await searchParams).page ? (await searchParams).page : "1";

@@ -30,7 +30,7 @@ type LoginFormProps = React.ComponentProps<"div"> & {
 
 export function LoginForm({
   className,
-    userType,
+  userType,
   ...props
 }: LoginFormProps) {
 
@@ -54,10 +54,7 @@ export function LoginForm({
         callbackUrl: userType === "Admin" ? "/dashboard" : "/handler/incidents",
       });
 
-      console.log('Login res:', res);
-
       if (res?.error == "CredentialsSignin") {
-        console.log('res:', res)
         setError("Wrong email or password");
         return;
       }
@@ -90,9 +87,14 @@ export function LoginForm({
                 />
               </Field>
               <Field>
-                <div className="flex items-center">
+                <div className="flex items-center justify-between">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
-                  
+                  <Link
+                    href="/password"
+                    className="text-sm text-muted-foreground hover:underline"
+                  >
+                    Forgot password?
+                  </Link>
                 </div>
                 <Input onChange={e => setPassword(e.target.value)} id="password" type="password" required />
               </Field>

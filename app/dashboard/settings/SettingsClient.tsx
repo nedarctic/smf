@@ -29,7 +29,6 @@ export default function SettingsClient({
     } | null;
 }) {
 
-    console.log("Company details at the settings client page:", company);
     const [pending, startTransition] = useTransition();
 
     // Company

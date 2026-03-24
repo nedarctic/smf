@@ -118,23 +118,18 @@ export async function uploadLogo(file: File, companyId: string) {
         body: uploadForm,
       }
     );
-
-    console.log("File successfully uploaded to Django:", res);
-
     if (!res.ok) {
       throw new Error("File upload failed");
     }
 
     const data = await res.json();
-    console.log("Response JSON:", data);
-
     await prisma.logo.update({
       where: { companyId: companyId },
       data: {
         logoUrl: data.file,
         downloadUrl: data.download_url,
       },
-    }).then(res => console.log("File path and name successfully saved to Prisma:", res));
+    })
   }
 
   const uploadForm = new FormData();
@@ -147,15 +142,11 @@ export async function uploadLogo(file: File, companyId: string) {
       body: uploadForm,
     }
   );
-
-  console.log("File successfully uploaded to Django:", res);
-
   if (!res.ok) {
     throw new Error("File upload failed");
   }
 
   const data = await res.json();
-  console.log("Response JSON:", data);
 
   await prisma.logo.create({
     data: {

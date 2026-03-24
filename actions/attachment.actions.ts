@@ -29,15 +29,12 @@ export async function uploadAdditionalEvidence({
                     }
                 );
 
-                console.log("File successfully uploaded to Django:", res);
-
                 if (!res.ok) {
                     throw new Error("File upload failed");
                 }
 
                 const data = await res.json();
-                console.log("Response JSON:", data);
-
+                
                 // Save reference in Prisma
                 await prisma.attachment.create({
                     data: {
@@ -46,10 +43,10 @@ export async function uploadAdditionalEvidence({
                         fileName: file.name,
                         filePath: data.download_url, // ← Django returns file path
                     },
-                }).then(res => console.log("File path and name successfully saved to Prisma:", res));
+                })
             }
         }
-} catch (error) {
+    } catch (error) {
         console.log("Error uploading additional evidence")
     }
 }

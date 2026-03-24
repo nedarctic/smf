@@ -39,10 +39,6 @@ export async function CreateIncident(
 
         const incidentId = randomUUID();
         const reporterId = randomUUID();
-
-        console.log("Random reporter UUID:", reporterId);
-        console.log("Random incident UUID", incidentId);
-
         const incidentNumber = generateIncidentNumber();
         const secretCode = generateSecretCode();
         const secretCodeHash = await argon2.hash(secretCode + PEPPER);
@@ -76,7 +72,7 @@ export async function CreateIncident(
                     },
                 }
             },
-        }).then(res => console.log("New incident created successfully", res));
+        })
 
         if (input.files && input.files.length > 0) {
             for (const file of Array.from(input.files)) {
@@ -90,16 +86,12 @@ export async function CreateIncident(
                         body: uploadForm,
                     }
                 );
-
-                console.log("File successfully uploaded to Django:", res);
-
                 if (!res.ok) {
                     throw new Error("File upload failed");
                 }
 
                 const data = await res.json();
-                console.log("Response JSON:", data);
-
+                
                 // Save reference in Prisma
                 await prisma.attachment.create({
                     data: {
@@ -108,15 +100,9 @@ export async function CreateIncident(
                         fileName: file.name,
                         filePath: data.download_url, // ← Django returns file path
                     },
-                }).then(res => console.log("File path and name successfully saved to Prisma:", res));
+                })
             }
         }
-
-        console.log({
-            success: true,
-            incidentNumber,
-            secretCode,
-        });
 
         return {
             success: true,
@@ -124,7 +110,6 @@ export async function CreateIncident(
             secretCode,
         };
     } catch (error) {
-        console.error("CreateIncident failed:", error);
         return {
             success: false,
             error: "Failed to submit incident. Please try again.",
