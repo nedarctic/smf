@@ -63,13 +63,13 @@ export async function inviteUser({
         .then(res => res.data!)
 
     // check if user is already invited
-    const isUserInvited = await prisma.user.findUnique({
+    const userStatus = await prisma.user.findUnique({
         where: { email: email }
-    }).then(res => res?.status === "Invited")
+    }).then(res => res?.status)
 
 
 
-    if (isUserInvited) {
+    if (userStatus === 'Invited') {
 
         const userId = await prisma.user.findUnique({
             where: { email: email }
@@ -108,6 +108,10 @@ export async function inviteUser({
         });
 
         return;
+    }
+
+    if (userStatus === "Active") {
+        return {error: "User already exists and is active"}
     }
 
     // 1. Create user
