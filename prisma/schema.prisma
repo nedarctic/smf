@@ -138,7 +138,7 @@ model ReportingPage {
   title            String?
   introContent     String?
   policyUrl        String?
-  reportingPageUrl String?
+  reportingPageUrl String? @unique
   company          Company @relation(fields: [companyId], references: [id])
 
   @@map("reporting_pages")
