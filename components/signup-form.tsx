@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card"
 import {
   Field,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
@@ -20,12 +19,7 @@ import React, { useState } from "react"
 import { useTransition } from "react";
 import { useRouter } from "next/navigation"
 import { inviteUser } from "@/actions/team.actions"
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle
-} from "@/components/ui/alert"
-import { CheckCircle2, AlertCircle } from "lucide-react"
+
 import {
   Dialog,
   DialogContent,
@@ -57,12 +51,21 @@ export function SignupForm({
 
     startTransition(async () => {
       try {
-        await inviteUser({ name, email });
+        const res = await inviteUser({ name, email });
 
-        setSuccess("Invite successfully sent.");
+        if (res && res.success) {
+          setSuccess("Invite successfully sent.");
+        }
+
+        if (res && res.error) {
+          setError(res.error)
+        }
+        
         setName("");
         setEmail("");
         setOpen(true);
+        router.refresh();
+
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
@@ -79,9 +82,9 @@ export function SignupForm({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Success</DialogTitle>
+            <DialogTitle>{success ? "Success" : "Error"}</DialogTitle>
             <DialogDescription>
-              {success}
+              {success ? success : error}
             </DialogDescription>
           </DialogHeader>
 
