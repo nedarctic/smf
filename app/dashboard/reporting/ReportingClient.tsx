@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   Card,
   CardContent,
@@ -20,10 +19,13 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 
 import UploadLogoForm from "@/components/upload-logo";
 
 export default function ReportingClient({ data }: any) {
+  const router = useRouter();
+
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState("");
@@ -79,12 +81,17 @@ export default function ReportingClient({ data }: any) {
       try {
         const res = await createCategory({ name: categoryName });
 
-        if (res?.error) return;
+        if (res?.error) {
+          setError(res.error);
+          setSuccess("");
+          setOpen(true);
+          return;
+        };
 
-        setCategories((prev: any) => [
-          { id: crypto.randomUUID(), categoryName },
-          ...prev,
-        ]);
+        // setCategories((prev: any) => [
+        //   { id: crypto.randomUUID(), categoryName },
+        //   ...prev,
+        // ]);
 
         setCategoryName("");
       } catch (err) {
