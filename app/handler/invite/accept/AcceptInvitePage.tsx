@@ -5,6 +5,28 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
+import { z } from 'zod';
+
+export const strongPasswordSchema = z
+    .string()
+    .min(8, "Password must be longer than 8 characters")
+    .max(128, "Password too long")
+    .regex(/[A-Z]/, "Must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Must contain at least one lowercase letter")
+    .regex(/[0-9]/, 'Must contain at least one number')
+    .regex(/[^a-zA-Z0-9]/, "Must contain at least one special character")
+
+const formSchema = z
+    .object({
+        password: strongPasswordSchema,
+        confirmPassword: z.string(),
+    })
+    .refine(
+        data => data.password === data.confirmPassword, {
+        message: "Passwords do not match",
+        path: ["confirmPassword"]
+    }
+    )
 
 export default function AcceptInvitePage() {
 
@@ -21,15 +43,15 @@ export default function AcceptInvitePage() {
         e.preventDefault();
         setError("")
 
-        if (password !== confirmPassword) {
-            setError("Passwords do not match")
+        const result = formSchema.safeParse({ password, confirmPassword });
+
+        if (!result.success) {
+            const firstError =
+                result.error.issues[0]?.message || "Invalid input";
+            setError(firstError);
             return;
         }
 
-        if (password.length < 6 || confirmPassword.length < 6) {
-            setError("Password at least 6 characters long");
-            return;
-        }
         const res = await fetch("/api/handler/activate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
