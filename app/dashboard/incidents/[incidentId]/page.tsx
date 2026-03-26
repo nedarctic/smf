@@ -92,7 +92,7 @@ export default async function ({
                             <div>
                                 <p className="text-muted-foreground">Incident Date</p>
                                 <p className="font-medium">
-                                    {incident.incidentDate.toLocaleDateString()}
+                                    {incident.incidentDate.toLocaleDateString(undefined, {timeZoneName: "short"})}
                                 </p>
                             </div>
 
@@ -119,25 +119,25 @@ export default async function ({
 
                             <div>
                                 <p className="text-muted-foreground">Created</p>
-                                <p>{incident.createdAt.toLocaleString()}</p>
+                                <p>{incident.createdAt.toLocaleString(undefined, {timeZoneName: "short"})}</p>
                             </div>
 
                             <div>
                                 <p className="text-muted-foreground">Updated</p>
-                                <p>{incident.updatedAt.toLocaleString()}</p>
+                                <p>{incident.updatedAt.toLocaleString(undefined, {timeZoneName: "short"})}</p>
                             </div>
 
                             {incident.closedAt && (
                                 <div>
                                     <p className="text-muted-foreground">Closed</p>
-                                    <p>{incident.closedAt.toLocaleString()}</p>
+                                    <p>{incident.closedAt.toLocaleString(undefined, {timeZoneName: "short"})}</p>
                                 </div>
                             )}
 
                             {incident.deadlineAt && (
                                 <div>
                                     <p className="text-muted-foreground">Deadline</p>
-                                    <p>{incident.deadlineAt.toLocaleString()}</p>
+                                    <p>{incident.deadlineAt.toLocaleString(undefined, {timeZoneName: "short"})}</p>
                                 </div>
                             )}
 
