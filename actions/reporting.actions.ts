@@ -21,6 +21,20 @@ export async function updateReportingPage({
   try {
     const companyId = await getCompanyId().then(res => res.data!);
 
+    // validate the slug - should not contain slash
+    if (slug.includes('/')) {
+      return {error: "Slug should not contain a slash (/)"}
+    }
+
+    // if slug exists return useful error
+    const isSlugExists = await prisma.reportingPage.findUnique({
+      where: {reportingPageUrl: slug}
+    }).then(res => res?.reportingPageUrl);
+
+    if (isSlugExists) {
+      return {error: "This reporting link is already in use by another company. Kindly choose another."}
+    }
+
     // Update slug
     await prisma.company.update({
       where: { id: companyId },
@@ -78,6 +92,19 @@ export async function createCategory({
 }) {
   try {
     const companyId = await getCompanyId().then(res => res.data!);
+
+    // check if category already exists
+    const categoryNames = await prisma.category.findMany({
+      where: {companyId: companyId}
+    }).then(res => res.map(cat => cat.categoryName))
+
+    const isCategoryNameExist = categoryNames.filter(cat => cat.toLowerCase() === name.toLowerCase());
+    
+    if(isCategoryNameExist.length) {
+      return {error: "Category name already exists"}
+    }
+
+    // create new unique category name
 
     await prisma.category.create({
       data: {
