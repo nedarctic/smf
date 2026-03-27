@@ -58,6 +58,7 @@ export async function getAccessToken(): Promise<string | null> {
 
         accessToken = tokens.access;
         refreshToken = tokens.refresh;
+        
     }
 
     if (!accessToken) return null;
