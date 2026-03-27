@@ -129,20 +129,22 @@ function DragHandle({ id }: { id: number }) {
 }
 
 const columns: ColumnDef<Incident>[] = [
-  
   {
     accessorKey: "incidentIdDisplay",
     header: "Incident ID",
+    size: 120,
   },
   {
     accessorKey: "category",
     header: "Category",
+    size: 150,
   },
   {
     accessorKey: "description",
     header: "Description",
+    size: 300,
     cell: ({ row }) => (
-      <div className="max-w-75 truncate">
+      <div className="overflow-hidden text-ellipsis whitespace-nowrap">
         {row.original.description}
       </div>
     ),
@@ -150,39 +152,48 @@ const columns: ColumnDef<Incident>[] = [
   {
     accessorKey: "location",
     header: "Location",
+    size: 200,
+    cell: ({ row }) => (
+      <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+        {row.original.location}
+      </div>
+    ),
   },
   {
     accessorKey: "incidentDate",
     header: "Date",
-    cell: ({ row }) =>
-      new Date(row.original.incidentDate).toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" }),
+    size: 140,
+    cell: ({ row }) => (
+      <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+        {new Date(row.original.incidentDate).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          timeZone: "UTC",
+        })}
+      </div>
+    ),
   },
   {
     accessorKey: "status",
     header: "Status",
+    size: 120,
     cell: ({ row }) => (
-      <Badge variant="outline">
-        {row.original.status}
-      </Badge>
+      <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+        <Badge variant="outline" className="max-w-full truncate">
+          {row.original.status}
+        </Badge>
+      </div>
     ),
   },
   {
     accessorKey: "reporterType",
     header: "Reporter",
-  },
-  {
-    id: "actions",
+    size: 60,
     cell: ({ row }) => (
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={(e) => {
-          e.stopPropagation();
-          // open menu / dialog here
-        }}
-      >
-        <EllipsisVerticalIcon />
-      </Button>
+      <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+        {row.original.reporterType}
+      </div>
     ),
   },
 ]
@@ -404,7 +415,7 @@ export function DataTable({
             sensors={sensors}
             id={sortableId}
           >
-            <Table>
+            <Table className="w-full table-fixed">
               <TableHeader className="sticky top-0 z-10 bg-muted">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
