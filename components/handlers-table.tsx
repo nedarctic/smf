@@ -24,14 +24,14 @@ export function HandlersTable({ handlers }: { handlers: User[] }) {
 
   return (
     <>
-    <Table>
+    <Table className="w-full table-fixed">
       <TableHeader>
         <TableRow>
           <TableHead className="w-25">ID</TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Role</TableHead>
+          <TableHead className="w-25">Name</TableHead>
+          <TableHead className="w-50">Email</TableHead>
+          <TableHead className="w-25">Status</TableHead>
+          <TableHead className="w-25">Role</TableHead>
         </TableRow>
       </TableHeader>
 
@@ -47,13 +47,13 @@ export function HandlersTable({ handlers }: { handlers: User[] }) {
               {index}
             </TableCell>
 
-            <TableCell>{handler.name}</TableCell>
+            <TableCell className="overflow-hidden text-ellipsis whitespace-nowrap">{handler.name}</TableCell>
 
-            <TableCell>{handler.email}</TableCell>
+            <TableCell className="overflow-hidden text-ellipsis whitespace-nowrap">{handler.email}</TableCell>
 
-            <TableCell>{handler.status}</TableCell>
+            <TableCell className="overflow-hidden text-ellipsis whitespace-nowrap">{handler.status}</TableCell>
 
-            <TableCell>{handler.role}</TableCell>
+            <TableCell className="overflow-hidden text-ellipsis whitespace-nowrap">{handler.role}</TableCell>
             
           </TableRow>
         ))}
