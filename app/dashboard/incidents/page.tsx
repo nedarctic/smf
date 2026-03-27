@@ -31,7 +31,10 @@ export default async function IncidentsPage({ searchParams }: {
                     ]}
                 />
                 <SearchInput />
+                
+                <div className="w-full">
                 <IncidentsTable incidents={data} />
+                </div>
                 <TablePagination totalPages={totalPages} />
             </div>
         </div>
