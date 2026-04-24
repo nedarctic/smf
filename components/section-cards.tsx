@@ -134,7 +134,7 @@ export function SectionCards({
   }
 
   return (
-<div className="grid grid-cols-4 gap-4 px-4 
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 px-4 
   *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 
   *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 
   dark:*:data-[slot=card]:bg-card">
