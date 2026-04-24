@@ -28,13 +28,17 @@ export default function IncidentEvidence({
 
       {attachments.length === 0 ? (
         <p className="text-gray-500 text-sm">
-          No supporting documents submitted.
+          No evidence has been submitted yet.
+          <br />
+          You can upload documents, images, or files to support your report.
         </p>
       ) : (
         <ul className="flex flex-col gap-6 max-w-3xl">
           {attachments.length === 0 ? (
             <p className="text-gray-500 text-sm">
-              No supporting documents submitted.
+              No evidence has been submitted yet.
+              <br />
+              You can upload documents, images, or files to support your report.
             </p>
           ) : (
             <div className="max-w-3xl max-h-80 overflow-y-auto pr-2">

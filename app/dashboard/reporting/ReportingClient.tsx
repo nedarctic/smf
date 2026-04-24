@@ -20,6 +20,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import UploadLogoForm from "@/components/upload-logo";
 
@@ -102,6 +103,9 @@ export default function ReportingClient({ data }: any) {
 
   const copyLink = async () => {
     await navigator.clipboard.writeText(fullLink);
+
+    toast.success("Copied successfully")
+
   };
 
   return (

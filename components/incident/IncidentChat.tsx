@@ -76,8 +76,7 @@ export default function IncidentChat({
         </h2>
 
         <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base font-light leading-relaxed">
-          This space enables confidential communication between you and
-          authorized handlers assigned to this incident.
+          Use this space to provide additional information or respond to questions from investigators.
         </p>
       </header>
 
@@ -92,6 +91,12 @@ export default function IncidentChat({
             className="overflow-y-auto h-80 border-2 dark:border-white border-black rounded-lg p-3">
 
             <ul className="text-sm space-y-3 mt-2">
+              {chatMessages.length === 0 && (
+                <div className="flex items-center justify-center h-full text-center text-sm text-muted-foreground px-4">
+                  No messages yet. Investigators may contact you here if more information is needed.
+                </div>
+              )}
+
               {chatMessages.map((msg) => {
                 const isMine = msg.senderType === senderType;
                 const messageDate = new Date(msg.createdAt);

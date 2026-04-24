@@ -52,7 +52,7 @@ export default function TrackIncidentPage() {
             Track an Incident
           </h1>
           <p className="text-sm text-muted-foreground">
-            Enter your Incident ID and secret code to securely track your report.
+            Enter your Incident ID and Secret Code to securely access your report. You can view updates, check status, and communicate with investigators.
           </p>
         </div>
 

@@ -44,7 +44,7 @@ export default function IncidentOverview({
         </div>
 
         <div>
-          <p className="text-gray-500">Reporter type</p>
+          <p className="text-gray-500">Report type</p>
           <p className="font-medium">{incident.reporterType}</p>
         </div>
       </div>

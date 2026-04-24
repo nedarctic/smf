@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
+import { toast } from "sonner";
 
 type CreateIncidentState =
   | { success: false; error?: string }
@@ -90,6 +91,8 @@ export function NewIncidentReportClient({
 
   const copyToClipboard = (value: string) => {
     navigator.clipboard.writeText(value);
+
+    toast.success("Copied successfully!");
   };
 
   const companyId = categories.map(ct => ct.companyId)
@@ -229,20 +232,20 @@ export function NewIncidentReportClient({
               onChange={(e) => setDescription(e.target.value)}
               rows={6}
               required
-              placeholder="Describe the incident in detail"
+              placeholder="Describe what happened, including dates, locations, and any relevant details."
             />
 
             <Input
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               required
-              placeholder="Where did the incident happen?"
+              placeholder="Where did the incident occur?"
             />
 
             <Input
               value={involvedPeople}
               onChange={(e) => setInvolvedPeople(e.target.value)}
-              placeholder="Who was involved?"
+              placeholder="Names, roles, or departments involved (if known)"
             />
 
             <div className="space-y-2">
@@ -309,7 +312,11 @@ export function NewIncidentReportClient({
             <DialogHeader>
               <DialogTitle>Incident submitted successfully</DialogTitle>
               <DialogDescription>
-                Save your details below. You will need them to track your report.
+                Please save your Incident ID and Secret Code.
+                <br /><br />
+                You will need BOTH to track your report, check updates, or communicate with investigators.
+                <br /><br />
+                For your security, we cannot recover your Secret Code if lost.
               </DialogDescription>
             </DialogHeader>
 

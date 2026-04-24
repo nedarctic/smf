@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Figtree, Raleway, Nunito_Sans } from "next/font/goog
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "sonner";
 
 const nunitoSans = Nunito_Sans({ variable: '--font-sans' });
 
@@ -42,6 +43,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
+          <Toaster position="top-center" richColors />
         </ThemeProvider>
       </body>
     </html>
