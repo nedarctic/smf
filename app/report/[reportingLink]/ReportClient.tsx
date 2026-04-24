@@ -58,9 +58,9 @@ export default function ReportClient({
           {title || "Reporting Portal"}
         </h1>
 
-        <p className="mt-6 max-w-2xl text-muted-foreground text-lg md:text-xl leading-relaxed">
-          {introContent ||
-            "Submit and manage reports securely through this reporting portal."}
+        <p className="mt-6 max-w-2xl text-muted-foreground text-md leading-relaxed">
+          You can report concerns confidentially or anonymously. All reports are handled independently by Semafacts. We do not tolerate retaliation against anyone who raises a concern in good faith.
+
         </p>
 
         <p className="mt-4 max-w-xl text-muted-foreground text-sm md:text-base">
