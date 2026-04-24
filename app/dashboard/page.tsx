@@ -64,10 +64,12 @@ export default async function DashboardPage() {
                             avgResolutionTime={avg_resolution_time}
                         />
 
+                        <DataTable data={incidents} />
+
                         <div className="px-4 lg:px-6">
                             <ChartAreaInteractive chartData={chartData} />
                         </div>
-                        <DataTable data={incidents} />
+                        
                     </div>
                 </div>
             </div>
