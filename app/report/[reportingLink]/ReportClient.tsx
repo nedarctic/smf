@@ -64,8 +64,13 @@ export default function ReportClient({
         </p>
 
         <p className="mt-4 max-w-xl text-muted-foreground text-sm md:text-base">
-          Reports can be submitted anonymously and are handled by authorized
-          investigators only.
+          ✔ Anonymous reporting available
+        </p>
+        <p className="mt-4 max-w-xl text-muted-foreground text-sm md:text-base">
+          ✔ Secure and encrypted submission
+        </p>
+        <p className="mt-4 max-w-xl text-muted-foreground text-sm md:text-base">
+          ✔ Independent handling by Semafacts
         </p>
 
         {policyUrl && (
@@ -139,6 +144,13 @@ export default function ReportClient({
         </div>
       </section>
 
+      {/* Process Time Note */}
+      <section className="w-full px-6 pb-12 -mt-16">
+        <p className="text-center text-sm text-muted-foreground">
+          The process takes 3–5 minutes
+        </p>
+      </section>
+
       {/* How It Works */}
       <section className="w-full px-6 py-24 bg-muted/40">
         <div className="max-w-5xl mx-auto space-y-12">
@@ -194,6 +206,6 @@ export default function ReportClient({
           prohibited.
         </p>
       </section>
-    </main>
+    </main >
   );
 }
