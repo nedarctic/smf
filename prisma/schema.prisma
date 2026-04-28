@@ -17,6 +17,7 @@ model Company {
   incidents         Incident[]
   reportingPages    ReportingPage?
   users             User[]
+  auditLogs         AuditLog[]
 
   @@map("companies")
 }
@@ -34,6 +35,7 @@ model User {
   assignedIncidents IncidentHandler[]
   messages          Message[]
   company           Company           @relation(fields: [companyId], references: [id])
+  auditLogs         AuditLog[]
 
   @@map("users")
 }
@@ -70,6 +72,7 @@ model Incident {
   messages          Message[]
   reporter          Reporter?
   secretCodes       SecretCode[]
+  auditLogs         AuditLog[]
 
   @@map("incidents")
 }
@@ -165,6 +168,50 @@ model Logo {
   logoUrl     String
   downloadUrl String
   createdAt   DateTime @default(now())
+}
+
+model AuditLog {
+  id         String  @id @default(uuid()) @db.Uuid
+  companyId  String? @db.Uuid
+  userId     String? @db.Uuid
+  incidentId String? @db.Uuid
+
+  action     AuditAction
+  entityType AuditEntity
+  entityId   String?
+
+  description String?
+  metadata    Json?
+
+  createdAt DateTime @default(now())
+
+  user     User?     @relation(fields: [userId], references: [id])
+  company  Company?  @relation(fields: [companyId], references: [id])
+  incident Incident? @relation(fields: [incidentId], references: [id])
+
+  @@map("audit_logs")
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  ASSIGN
+  STATUS_CHANGE
+  SEND_MESSAGE
+  UPLOAD_FILE
+  LOGIN
+  INVITE
+}
+
+enum AuditEntity {
+  COMPANY
+  USER
+  INCIDENT
+  MESSAGE
+  ATTACHMENT
+  CATEGORY
+  REPORTING_PAGE
 }
 
 enum IncidentStatus {

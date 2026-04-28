@@ -9,6 +9,34 @@
 * 🟢 You can import this file directly.
 */
 
+export const AuditAction = {
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE',
+  ASSIGN: 'ASSIGN',
+  STATUS_CHANGE: 'STATUS_CHANGE',
+  SEND_MESSAGE: 'SEND_MESSAGE',
+  UPLOAD_FILE: 'UPLOAD_FILE',
+  LOGIN: 'LOGIN',
+  INVITE: 'INVITE'
+} as const
+
+export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
+
+
+export const AuditEntity = {
+  COMPANY: 'COMPANY',
+  USER: 'USER',
+  INCIDENT: 'INCIDENT',
+  MESSAGE: 'MESSAGE',
+  ATTACHMENT: 'ATTACHMENT',
+  CATEGORY: 'CATEGORY',
+  REPORTING_PAGE: 'REPORTING_PAGE'
+} as const
+
+export type AuditEntity = (typeof AuditEntity)[keyof typeof AuditEntity]
+
+
 export const IncidentStatus = {
   New: 'New',
   InReview: 'InReview',

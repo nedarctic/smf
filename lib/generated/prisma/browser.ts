@@ -77,3 +77,8 @@ export type Message = Prisma.MessageModel
  * 
  */
 export type Logo = Prisma.LogoModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel

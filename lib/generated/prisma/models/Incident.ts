@@ -276,6 +276,7 @@ export type IncidentWhereInput = {
   messages?: Prisma.MessageListRelationFilter
   reporter?: Prisma.XOR<Prisma.ReporterNullableScalarRelationFilter, Prisma.ReporterWhereInput> | null
   secretCodes?: Prisma.SecretCodeListRelationFilter
+  auditLogs?: Prisma.AuditLogListRelationFilter
 }
 
 export type IncidentOrderByWithRelationInput = {
@@ -301,6 +302,7 @@ export type IncidentOrderByWithRelationInput = {
   messages?: Prisma.MessageOrderByRelationAggregateInput
   reporter?: Prisma.ReporterOrderByWithRelationInput
   secretCodes?: Prisma.SecretCodeOrderByRelationAggregateInput
+  auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
 }
 
 export type IncidentWhereUniqueInput = Prisma.AtLeast<{
@@ -329,6 +331,7 @@ export type IncidentWhereUniqueInput = Prisma.AtLeast<{
   messages?: Prisma.MessageListRelationFilter
   reporter?: Prisma.XOR<Prisma.ReporterNullableScalarRelationFilter, Prisma.ReporterWhereInput> | null
   secretCodes?: Prisma.SecretCodeListRelationFilter
+  auditLogs?: Prisma.AuditLogListRelationFilter
 }, "id" | "incidentIdDisplay">
 
 export type IncidentOrderByWithAggregationInput = {
@@ -397,6 +400,7 @@ export type IncidentCreateInput = {
   messages?: Prisma.MessageCreateNestedManyWithoutIncidentInput
   reporter?: Prisma.ReporterCreateNestedOneWithoutIncidentInput
   secretCodes?: Prisma.SecretCodeCreateNestedManyWithoutIncidentInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutIncidentInput
 }
 
 export type IncidentUncheckedCreateInput = {
@@ -421,6 +425,7 @@ export type IncidentUncheckedCreateInput = {
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutIncidentInput
   reporter?: Prisma.ReporterUncheckedCreateNestedOneWithoutIncidentInput
   secretCodes?: Prisma.SecretCodeUncheckedCreateNestedManyWithoutIncidentInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutIncidentInput
 }
 
 export type IncidentUpdateInput = {
@@ -445,6 +450,7 @@ export type IncidentUpdateInput = {
   messages?: Prisma.MessageUpdateManyWithoutIncidentNestedInput
   reporter?: Prisma.ReporterUpdateOneWithoutIncidentNestedInput
   secretCodes?: Prisma.SecretCodeUpdateManyWithoutIncidentNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutIncidentNestedInput
 }
 
 export type IncidentUncheckedUpdateInput = {
@@ -469,6 +475,7 @@ export type IncidentUncheckedUpdateInput = {
   messages?: Prisma.MessageUncheckedUpdateManyWithoutIncidentNestedInput
   reporter?: Prisma.ReporterUncheckedUpdateOneWithoutIncidentNestedInput
   secretCodes?: Prisma.SecretCodeUncheckedUpdateManyWithoutIncidentNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutIncidentNestedInput
 }
 
 export type IncidentCreateManyInput = {
@@ -599,6 +606,11 @@ export type IncidentScalarRelationFilter = {
   isNot?: Prisma.IncidentWhereInput
 }
 
+export type IncidentNullableScalarRelationFilter = {
+  is?: Prisma.IncidentWhereInput | null
+  isNot?: Prisma.IncidentWhereInput | null
+}
+
 export type IncidentCreateNestedManyWithoutCompanyInput = {
   create?: Prisma.XOR<Prisma.IncidentCreateWithoutCompanyInput, Prisma.IncidentUncheckedCreateWithoutCompanyInput> | Prisma.IncidentCreateWithoutCompanyInput[] | Prisma.IncidentUncheckedCreateWithoutCompanyInput[]
   connectOrCreate?: Prisma.IncidentCreateOrConnectWithoutCompanyInput | Prisma.IncidentCreateOrConnectWithoutCompanyInput[]
@@ -723,6 +735,22 @@ export type IncidentUpdateOneRequiredWithoutMessagesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.IncidentUpdateToOneWithWhereWithoutMessagesInput, Prisma.IncidentUpdateWithoutMessagesInput>, Prisma.IncidentUncheckedUpdateWithoutMessagesInput>
 }
 
+export type IncidentCreateNestedOneWithoutAuditLogsInput = {
+  create?: Prisma.XOR<Prisma.IncidentCreateWithoutAuditLogsInput, Prisma.IncidentUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.IncidentCreateOrConnectWithoutAuditLogsInput
+  connect?: Prisma.IncidentWhereUniqueInput
+}
+
+export type IncidentUpdateOneWithoutAuditLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.IncidentCreateWithoutAuditLogsInput, Prisma.IncidentUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.IncidentCreateOrConnectWithoutAuditLogsInput
+  upsert?: Prisma.IncidentUpsertWithoutAuditLogsInput
+  disconnect?: Prisma.IncidentWhereInput | boolean
+  delete?: Prisma.IncidentWhereInput | boolean
+  connect?: Prisma.IncidentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.IncidentUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.IncidentUpdateWithoutAuditLogsInput>, Prisma.IncidentUncheckedUpdateWithoutAuditLogsInput>
+}
+
 export type IncidentCreateWithoutCompanyInput = {
   id?: string
   incidentIdDisplay: string
@@ -744,6 +772,7 @@ export type IncidentCreateWithoutCompanyInput = {
   messages?: Prisma.MessageCreateNestedManyWithoutIncidentInput
   reporter?: Prisma.ReporterCreateNestedOneWithoutIncidentInput
   secretCodes?: Prisma.SecretCodeCreateNestedManyWithoutIncidentInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutIncidentInput
 }
 
 export type IncidentUncheckedCreateWithoutCompanyInput = {
@@ -767,6 +796,7 @@ export type IncidentUncheckedCreateWithoutCompanyInput = {
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutIncidentInput
   reporter?: Prisma.ReporterUncheckedCreateNestedOneWithoutIncidentInput
   secretCodes?: Prisma.SecretCodeUncheckedCreateNestedManyWithoutIncidentInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutIncidentInput
 }
 
 export type IncidentCreateOrConnectWithoutCompanyInput = {
@@ -838,6 +868,7 @@ export type IncidentCreateWithoutReporterInput = {
   company: Prisma.CompanyCreateNestedOneWithoutIncidentsInput
   messages?: Prisma.MessageCreateNestedManyWithoutIncidentInput
   secretCodes?: Prisma.SecretCodeCreateNestedManyWithoutIncidentInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutIncidentInput
 }
 
 export type IncidentUncheckedCreateWithoutReporterInput = {
@@ -861,6 +892,7 @@ export type IncidentUncheckedCreateWithoutReporterInput = {
   handlers?: Prisma.IncidentHandlerUncheckedCreateNestedManyWithoutIncidentInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutIncidentInput
   secretCodes?: Prisma.SecretCodeUncheckedCreateNestedManyWithoutIncidentInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutIncidentInput
 }
 
 export type IncidentCreateOrConnectWithoutReporterInput = {
@@ -900,6 +932,7 @@ export type IncidentUpdateWithoutReporterInput = {
   company?: Prisma.CompanyUpdateOneRequiredWithoutIncidentsNestedInput
   messages?: Prisma.MessageUpdateManyWithoutIncidentNestedInput
   secretCodes?: Prisma.SecretCodeUpdateManyWithoutIncidentNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutIncidentNestedInput
 }
 
 export type IncidentUncheckedUpdateWithoutReporterInput = {
@@ -923,6 +956,7 @@ export type IncidentUncheckedUpdateWithoutReporterInput = {
   handlers?: Prisma.IncidentHandlerUncheckedUpdateManyWithoutIncidentNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutIncidentNestedInput
   secretCodes?: Prisma.SecretCodeUncheckedUpdateManyWithoutIncidentNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutIncidentNestedInput
 }
 
 export type IncidentCreateWithoutHandlersInput = {
@@ -946,6 +980,7 @@ export type IncidentCreateWithoutHandlersInput = {
   messages?: Prisma.MessageCreateNestedManyWithoutIncidentInput
   reporter?: Prisma.ReporterCreateNestedOneWithoutIncidentInput
   secretCodes?: Prisma.SecretCodeCreateNestedManyWithoutIncidentInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutIncidentInput
 }
 
 export type IncidentUncheckedCreateWithoutHandlersInput = {
@@ -969,6 +1004,7 @@ export type IncidentUncheckedCreateWithoutHandlersInput = {
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutIncidentInput
   reporter?: Prisma.ReporterUncheckedCreateNestedOneWithoutIncidentInput
   secretCodes?: Prisma.SecretCodeUncheckedCreateNestedManyWithoutIncidentInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutIncidentInput
 }
 
 export type IncidentCreateOrConnectWithoutHandlersInput = {
@@ -1008,6 +1044,7 @@ export type IncidentUpdateWithoutHandlersInput = {
   messages?: Prisma.MessageUpdateManyWithoutIncidentNestedInput
   reporter?: Prisma.ReporterUpdateOneWithoutIncidentNestedInput
   secretCodes?: Prisma.SecretCodeUpdateManyWithoutIncidentNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutIncidentNestedInput
 }
 
 export type IncidentUncheckedUpdateWithoutHandlersInput = {
@@ -1031,6 +1068,7 @@ export type IncidentUncheckedUpdateWithoutHandlersInput = {
   messages?: Prisma.MessageUncheckedUpdateManyWithoutIncidentNestedInput
   reporter?: Prisma.ReporterUncheckedUpdateOneWithoutIncidentNestedInput
   secretCodes?: Prisma.SecretCodeUncheckedUpdateManyWithoutIncidentNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutIncidentNestedInput
 }
 
 export type IncidentCreateWithoutAttachmentsInput = {
@@ -1054,6 +1092,7 @@ export type IncidentCreateWithoutAttachmentsInput = {
   messages?: Prisma.MessageCreateNestedManyWithoutIncidentInput
   reporter?: Prisma.ReporterCreateNestedOneWithoutIncidentInput
   secretCodes?: Prisma.SecretCodeCreateNestedManyWithoutIncidentInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutIncidentInput
 }
 
 export type IncidentUncheckedCreateWithoutAttachmentsInput = {
@@ -1077,6 +1116,7 @@ export type IncidentUncheckedCreateWithoutAttachmentsInput = {
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutIncidentInput
   reporter?: Prisma.ReporterUncheckedCreateNestedOneWithoutIncidentInput
   secretCodes?: Prisma.SecretCodeUncheckedCreateNestedManyWithoutIncidentInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutIncidentInput
 }
 
 export type IncidentCreateOrConnectWithoutAttachmentsInput = {
@@ -1116,6 +1156,7 @@ export type IncidentUpdateWithoutAttachmentsInput = {
   messages?: Prisma.MessageUpdateManyWithoutIncidentNestedInput
   reporter?: Prisma.ReporterUpdateOneWithoutIncidentNestedInput
   secretCodes?: Prisma.SecretCodeUpdateManyWithoutIncidentNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutIncidentNestedInput
 }
 
 export type IncidentUncheckedUpdateWithoutAttachmentsInput = {
@@ -1139,6 +1180,7 @@ export type IncidentUncheckedUpdateWithoutAttachmentsInput = {
   messages?: Prisma.MessageUncheckedUpdateManyWithoutIncidentNestedInput
   reporter?: Prisma.ReporterUncheckedUpdateOneWithoutIncidentNestedInput
   secretCodes?: Prisma.SecretCodeUncheckedUpdateManyWithoutIncidentNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutIncidentNestedInput
 }
 
 export type IncidentCreateWithoutSecretCodesInput = {
@@ -1162,6 +1204,7 @@ export type IncidentCreateWithoutSecretCodesInput = {
   company: Prisma.CompanyCreateNestedOneWithoutIncidentsInput
   messages?: Prisma.MessageCreateNestedManyWithoutIncidentInput
   reporter?: Prisma.ReporterCreateNestedOneWithoutIncidentInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutIncidentInput
 }
 
 export type IncidentUncheckedCreateWithoutSecretCodesInput = {
@@ -1185,6 +1228,7 @@ export type IncidentUncheckedCreateWithoutSecretCodesInput = {
   handlers?: Prisma.IncidentHandlerUncheckedCreateNestedManyWithoutIncidentInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutIncidentInput
   reporter?: Prisma.ReporterUncheckedCreateNestedOneWithoutIncidentInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutIncidentInput
 }
 
 export type IncidentCreateOrConnectWithoutSecretCodesInput = {
@@ -1224,6 +1268,7 @@ export type IncidentUpdateWithoutSecretCodesInput = {
   company?: Prisma.CompanyUpdateOneRequiredWithoutIncidentsNestedInput
   messages?: Prisma.MessageUpdateManyWithoutIncidentNestedInput
   reporter?: Prisma.ReporterUpdateOneWithoutIncidentNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutIncidentNestedInput
 }
 
 export type IncidentUncheckedUpdateWithoutSecretCodesInput = {
@@ -1247,6 +1292,7 @@ export type IncidentUncheckedUpdateWithoutSecretCodesInput = {
   handlers?: Prisma.IncidentHandlerUncheckedUpdateManyWithoutIncidentNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutIncidentNestedInput
   reporter?: Prisma.ReporterUncheckedUpdateOneWithoutIncidentNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutIncidentNestedInput
 }
 
 export type IncidentCreateWithoutMessagesInput = {
@@ -1270,6 +1316,7 @@ export type IncidentCreateWithoutMessagesInput = {
   company: Prisma.CompanyCreateNestedOneWithoutIncidentsInput
   reporter?: Prisma.ReporterCreateNestedOneWithoutIncidentInput
   secretCodes?: Prisma.SecretCodeCreateNestedManyWithoutIncidentInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutIncidentInput
 }
 
 export type IncidentUncheckedCreateWithoutMessagesInput = {
@@ -1293,6 +1340,7 @@ export type IncidentUncheckedCreateWithoutMessagesInput = {
   handlers?: Prisma.IncidentHandlerUncheckedCreateNestedManyWithoutIncidentInput
   reporter?: Prisma.ReporterUncheckedCreateNestedOneWithoutIncidentInput
   secretCodes?: Prisma.SecretCodeUncheckedCreateNestedManyWithoutIncidentInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutIncidentInput
 }
 
 export type IncidentCreateOrConnectWithoutMessagesInput = {
@@ -1332,6 +1380,7 @@ export type IncidentUpdateWithoutMessagesInput = {
   company?: Prisma.CompanyUpdateOneRequiredWithoutIncidentsNestedInput
   reporter?: Prisma.ReporterUpdateOneWithoutIncidentNestedInput
   secretCodes?: Prisma.SecretCodeUpdateManyWithoutIncidentNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutIncidentNestedInput
 }
 
 export type IncidentUncheckedUpdateWithoutMessagesInput = {
@@ -1353,6 +1402,119 @@ export type IncidentUncheckedUpdateWithoutMessagesInput = {
   duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutIncidentNestedInput
   handlers?: Prisma.IncidentHandlerUncheckedUpdateManyWithoutIncidentNestedInput
+  reporter?: Prisma.ReporterUncheckedUpdateOneWithoutIncidentNestedInput
+  secretCodes?: Prisma.SecretCodeUncheckedUpdateManyWithoutIncidentNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutIncidentNestedInput
+}
+
+export type IncidentCreateWithoutAuditLogsInput = {
+  id?: string
+  incidentIdDisplay: string
+  category: string
+  description: string
+  location: string
+  involvedPeople?: string | null
+  incidentDate: Date | string
+  reporterType: $Enums.ReporterType
+  status: $Enums.IncidentStatus
+  secretCodeHash: string
+  deadlineAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  closedAt?: Date | string | null
+  duration?: string | null
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutIncidentInput
+  handlers?: Prisma.IncidentHandlerCreateNestedManyWithoutIncidentInput
+  company: Prisma.CompanyCreateNestedOneWithoutIncidentsInput
+  messages?: Prisma.MessageCreateNestedManyWithoutIncidentInput
+  reporter?: Prisma.ReporterCreateNestedOneWithoutIncidentInput
+  secretCodes?: Prisma.SecretCodeCreateNestedManyWithoutIncidentInput
+}
+
+export type IncidentUncheckedCreateWithoutAuditLogsInput = {
+  id?: string
+  companyId: string
+  incidentIdDisplay: string
+  category: string
+  description: string
+  location: string
+  involvedPeople?: string | null
+  incidentDate: Date | string
+  reporterType: $Enums.ReporterType
+  status: $Enums.IncidentStatus
+  secretCodeHash: string
+  deadlineAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  closedAt?: Date | string | null
+  duration?: string | null
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutIncidentInput
+  handlers?: Prisma.IncidentHandlerUncheckedCreateNestedManyWithoutIncidentInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutIncidentInput
+  reporter?: Prisma.ReporterUncheckedCreateNestedOneWithoutIncidentInput
+  secretCodes?: Prisma.SecretCodeUncheckedCreateNestedManyWithoutIncidentInput
+}
+
+export type IncidentCreateOrConnectWithoutAuditLogsInput = {
+  where: Prisma.IncidentWhereUniqueInput
+  create: Prisma.XOR<Prisma.IncidentCreateWithoutAuditLogsInput, Prisma.IncidentUncheckedCreateWithoutAuditLogsInput>
+}
+
+export type IncidentUpsertWithoutAuditLogsInput = {
+  update: Prisma.XOR<Prisma.IncidentUpdateWithoutAuditLogsInput, Prisma.IncidentUncheckedUpdateWithoutAuditLogsInput>
+  create: Prisma.XOR<Prisma.IncidentCreateWithoutAuditLogsInput, Prisma.IncidentUncheckedCreateWithoutAuditLogsInput>
+  where?: Prisma.IncidentWhereInput
+}
+
+export type IncidentUpdateToOneWithWhereWithoutAuditLogsInput = {
+  where?: Prisma.IncidentWhereInput
+  data: Prisma.XOR<Prisma.IncidentUpdateWithoutAuditLogsInput, Prisma.IncidentUncheckedUpdateWithoutAuditLogsInput>
+}
+
+export type IncidentUpdateWithoutAuditLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  incidentIdDisplay?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  involvedPeople?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  incidentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reporterType?: Prisma.EnumReporterTypeFieldUpdateOperationsInput | $Enums.ReporterType
+  status?: Prisma.EnumIncidentStatusFieldUpdateOperationsInput | $Enums.IncidentStatus
+  secretCodeHash?: Prisma.StringFieldUpdateOperationsInput | string
+  deadlineAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.AttachmentUpdateManyWithoutIncidentNestedInput
+  handlers?: Prisma.IncidentHandlerUpdateManyWithoutIncidentNestedInput
+  company?: Prisma.CompanyUpdateOneRequiredWithoutIncidentsNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutIncidentNestedInput
+  reporter?: Prisma.ReporterUpdateOneWithoutIncidentNestedInput
+  secretCodes?: Prisma.SecretCodeUpdateManyWithoutIncidentNestedInput
+}
+
+export type IncidentUncheckedUpdateWithoutAuditLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  incidentIdDisplay?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  involvedPeople?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  incidentDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reporterType?: Prisma.EnumReporterTypeFieldUpdateOperationsInput | $Enums.ReporterType
+  status?: Prisma.EnumIncidentStatusFieldUpdateOperationsInput | $Enums.IncidentStatus
+  secretCodeHash?: Prisma.StringFieldUpdateOperationsInput | string
+  deadlineAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutIncidentNestedInput
+  handlers?: Prisma.IncidentHandlerUncheckedUpdateManyWithoutIncidentNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutIncidentNestedInput
   reporter?: Prisma.ReporterUncheckedUpdateOneWithoutIncidentNestedInput
   secretCodes?: Prisma.SecretCodeUncheckedUpdateManyWithoutIncidentNestedInput
 }
@@ -1396,6 +1558,7 @@ export type IncidentUpdateWithoutCompanyInput = {
   messages?: Prisma.MessageUpdateManyWithoutIncidentNestedInput
   reporter?: Prisma.ReporterUpdateOneWithoutIncidentNestedInput
   secretCodes?: Prisma.SecretCodeUpdateManyWithoutIncidentNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutIncidentNestedInput
 }
 
 export type IncidentUncheckedUpdateWithoutCompanyInput = {
@@ -1419,6 +1582,7 @@ export type IncidentUncheckedUpdateWithoutCompanyInput = {
   messages?: Prisma.MessageUncheckedUpdateManyWithoutIncidentNestedInput
   reporter?: Prisma.ReporterUncheckedUpdateOneWithoutIncidentNestedInput
   secretCodes?: Prisma.SecretCodeUncheckedUpdateManyWithoutIncidentNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutIncidentNestedInput
 }
 
 export type IncidentUncheckedUpdateManyWithoutCompanyInput = {
@@ -1449,6 +1613,7 @@ export type IncidentCountOutputType = {
   handlers: number
   messages: number
   secretCodes: number
+  auditLogs: number
 }
 
 export type IncidentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1456,6 +1621,7 @@ export type IncidentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   handlers?: boolean | IncidentCountOutputTypeCountHandlersArgs
   messages?: boolean | IncidentCountOutputTypeCountMessagesArgs
   secretCodes?: boolean | IncidentCountOutputTypeCountSecretCodesArgs
+  auditLogs?: boolean | IncidentCountOutputTypeCountAuditLogsArgs
 }
 
 /**
@@ -1496,6 +1662,13 @@ export type IncidentCountOutputTypeCountSecretCodesArgs<ExtArgs extends runtime.
   where?: Prisma.SecretCodeWhereInput
 }
 
+/**
+ * IncidentCountOutputType without action
+ */
+export type IncidentCountOutputTypeCountAuditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AuditLogWhereInput
+}
+
 
 export type IncidentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1520,6 +1693,7 @@ export type IncidentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   messages?: boolean | Prisma.Incident$messagesArgs<ExtArgs>
   reporter?: boolean | Prisma.Incident$reporterArgs<ExtArgs>
   secretCodes?: boolean | Prisma.Incident$secretCodesArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.Incident$auditLogsArgs<ExtArgs>
   _count?: boolean | Prisma.IncidentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["incident"]>
 
@@ -1590,6 +1764,7 @@ export type IncidentInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   messages?: boolean | Prisma.Incident$messagesArgs<ExtArgs>
   reporter?: boolean | Prisma.Incident$reporterArgs<ExtArgs>
   secretCodes?: boolean | Prisma.Incident$secretCodesArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.Incident$auditLogsArgs<ExtArgs>
   _count?: boolean | Prisma.IncidentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type IncidentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1608,6 +1783,7 @@ export type $IncidentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     messages: Prisma.$MessagePayload<ExtArgs>[]
     reporter: Prisma.$ReporterPayload<ExtArgs> | null
     secretCodes: Prisma.$SecretCodePayload<ExtArgs>[]
+    auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2026,6 +2202,7 @@ export interface Prisma__IncidentClient<T, Null = never, ExtArgs extends runtime
   messages<T extends Prisma.Incident$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Incident$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reporter<T extends Prisma.Incident$reporterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Incident$reporterArgs<ExtArgs>>): Prisma.Prisma__ReporterClient<runtime.Types.Result.GetResult<Prisma.$ReporterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   secretCodes<T extends Prisma.Incident$secretCodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Incident$secretCodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SecretCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  auditLogs<T extends Prisma.Incident$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Incident$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2584,6 +2761,30 @@ export type Incident$secretCodesArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.SecretCodeScalarFieldEnum | Prisma.SecretCodeScalarFieldEnum[]
+}
+
+/**
+ * Incident.auditLogs
+ */
+export type Incident$auditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AuditLog
+   */
+  select?: Prisma.AuditLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AuditLog
+   */
+  omit?: Prisma.AuditLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AuditLogInclude<ExtArgs> | null
+  where?: Prisma.AuditLogWhereInput
+  orderBy?: Prisma.AuditLogOrderByWithRelationInput | Prisma.AuditLogOrderByWithRelationInput[]
+  cursor?: Prisma.AuditLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AuditLogScalarFieldEnum | Prisma.AuditLogScalarFieldEnum[]
 }
 
 /**

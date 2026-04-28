@@ -186,6 +186,7 @@ export type CompanyWhereInput = {
   incidents?: Prisma.IncidentListRelationFilter
   reportingPages?: Prisma.XOR<Prisma.ReportingPageNullableScalarRelationFilter, Prisma.ReportingPageWhereInput> | null
   users?: Prisma.UserListRelationFilter
+  auditLogs?: Prisma.AuditLogListRelationFilter
 }
 
 export type CompanyOrderByWithRelationInput = {
@@ -198,6 +199,7 @@ export type CompanyOrderByWithRelationInput = {
   incidents?: Prisma.IncidentOrderByRelationAggregateInput
   reportingPages?: Prisma.ReportingPageOrderByWithRelationInput
   users?: Prisma.UserOrderByRelationAggregateInput
+  auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
 }
 
 export type CompanyWhereUniqueInput = Prisma.AtLeast<{
@@ -213,6 +215,7 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   incidents?: Prisma.IncidentListRelationFilter
   reportingPages?: Prisma.XOR<Prisma.ReportingPageNullableScalarRelationFilter, Prisma.ReportingPageWhereInput> | null
   users?: Prisma.UserListRelationFilter
+  auditLogs?: Prisma.AuditLogListRelationFilter
 }, "id" | "reportingLinkSlug">
 
 export type CompanyOrderByWithAggregationInput = {
@@ -247,6 +250,7 @@ export type CompanyCreateInput = {
   incidents?: Prisma.IncidentCreateNestedManyWithoutCompanyInput
   reportingPages?: Prisma.ReportingPageCreateNestedOneWithoutCompanyInput
   users?: Prisma.UserCreateNestedManyWithoutCompanyInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateInput = {
@@ -259,6 +263,7 @@ export type CompanyUncheckedCreateInput = {
   incidents?: Prisma.IncidentUncheckedCreateNestedManyWithoutCompanyInput
   reportingPages?: Prisma.ReportingPageUncheckedCreateNestedOneWithoutCompanyInput
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUpdateInput = {
@@ -271,6 +276,7 @@ export type CompanyUpdateInput = {
   incidents?: Prisma.IncidentUpdateManyWithoutCompanyNestedInput
   reportingPages?: Prisma.ReportingPageUpdateOneWithoutCompanyNestedInput
   users?: Prisma.UserUpdateManyWithoutCompanyNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateInput = {
@@ -283,6 +289,7 @@ export type CompanyUncheckedUpdateInput = {
   incidents?: Prisma.IncidentUncheckedUpdateManyWithoutCompanyNestedInput
   reportingPages?: Prisma.ReportingPageUncheckedUpdateOneWithoutCompanyNestedInput
   users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateManyInput = {
@@ -336,6 +343,11 @@ export type CompanyMinOrderByAggregateInput = {
 export type CompanyScalarRelationFilter = {
   is?: Prisma.CompanyWhereInput
   isNot?: Prisma.CompanyWhereInput
+}
+
+export type CompanyNullableScalarRelationFilter = {
+  is?: Prisma.CompanyWhereInput | null
+  isNot?: Prisma.CompanyWhereInput | null
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -406,6 +418,22 @@ export type CompanyUpdateOneRequiredWithoutReportingPagesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutReportingPagesInput, Prisma.CompanyUpdateWithoutReportingPagesInput>, Prisma.CompanyUncheckedUpdateWithoutReportingPagesInput>
 }
 
+export type CompanyCreateNestedOneWithoutAuditLogsInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutAuditLogsInput, Prisma.CompanyUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutAuditLogsInput
+  connect?: Prisma.CompanyWhereUniqueInput
+}
+
+export type CompanyUpdateOneWithoutAuditLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutAuditLogsInput, Prisma.CompanyUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutAuditLogsInput
+  upsert?: Prisma.CompanyUpsertWithoutAuditLogsInput
+  disconnect?: Prisma.CompanyWhereInput | boolean
+  delete?: Prisma.CompanyWhereInput | boolean
+  connect?: Prisma.CompanyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.CompanyUpdateWithoutAuditLogsInput>, Prisma.CompanyUncheckedUpdateWithoutAuditLogsInput>
+}
+
 export type CompanyCreateWithoutUsersInput = {
   id?: string
   name?: string | null
@@ -415,6 +443,7 @@ export type CompanyCreateWithoutUsersInput = {
   categories?: Prisma.CategoryCreateNestedManyWithoutCompanyInput
   incidents?: Prisma.IncidentCreateNestedManyWithoutCompanyInput
   reportingPages?: Prisma.ReportingPageCreateNestedOneWithoutCompanyInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutUsersInput = {
@@ -426,6 +455,7 @@ export type CompanyUncheckedCreateWithoutUsersInput = {
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutCompanyInput
   incidents?: Prisma.IncidentUncheckedCreateNestedManyWithoutCompanyInput
   reportingPages?: Prisma.ReportingPageUncheckedCreateNestedOneWithoutCompanyInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutUsersInput = {
@@ -453,6 +483,7 @@ export type CompanyUpdateWithoutUsersInput = {
   categories?: Prisma.CategoryUpdateManyWithoutCompanyNestedInput
   incidents?: Prisma.IncidentUpdateManyWithoutCompanyNestedInput
   reportingPages?: Prisma.ReportingPageUpdateOneWithoutCompanyNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutUsersInput = {
@@ -464,6 +495,7 @@ export type CompanyUncheckedUpdateWithoutUsersInput = {
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutCompanyNestedInput
   incidents?: Prisma.IncidentUncheckedUpdateManyWithoutCompanyNestedInput
   reportingPages?: Prisma.ReportingPageUncheckedUpdateOneWithoutCompanyNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutIncidentsInput = {
@@ -475,6 +507,7 @@ export type CompanyCreateWithoutIncidentsInput = {
   categories?: Prisma.CategoryCreateNestedManyWithoutCompanyInput
   reportingPages?: Prisma.ReportingPageCreateNestedOneWithoutCompanyInput
   users?: Prisma.UserCreateNestedManyWithoutCompanyInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutIncidentsInput = {
@@ -486,6 +519,7 @@ export type CompanyUncheckedCreateWithoutIncidentsInput = {
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutCompanyInput
   reportingPages?: Prisma.ReportingPageUncheckedCreateNestedOneWithoutCompanyInput
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutIncidentsInput = {
@@ -513,6 +547,7 @@ export type CompanyUpdateWithoutIncidentsInput = {
   categories?: Prisma.CategoryUpdateManyWithoutCompanyNestedInput
   reportingPages?: Prisma.ReportingPageUpdateOneWithoutCompanyNestedInput
   users?: Prisma.UserUpdateManyWithoutCompanyNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutIncidentsInput = {
@@ -524,6 +559,7 @@ export type CompanyUncheckedUpdateWithoutIncidentsInput = {
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutCompanyNestedInput
   reportingPages?: Prisma.ReportingPageUncheckedUpdateOneWithoutCompanyNestedInput
   users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutCategoriesInput = {
@@ -535,6 +571,7 @@ export type CompanyCreateWithoutCategoriesInput = {
   incidents?: Prisma.IncidentCreateNestedManyWithoutCompanyInput
   reportingPages?: Prisma.ReportingPageCreateNestedOneWithoutCompanyInput
   users?: Prisma.UserCreateNestedManyWithoutCompanyInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutCategoriesInput = {
@@ -546,6 +583,7 @@ export type CompanyUncheckedCreateWithoutCategoriesInput = {
   incidents?: Prisma.IncidentUncheckedCreateNestedManyWithoutCompanyInput
   reportingPages?: Prisma.ReportingPageUncheckedCreateNestedOneWithoutCompanyInput
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutCategoriesInput = {
@@ -573,6 +611,7 @@ export type CompanyUpdateWithoutCategoriesInput = {
   incidents?: Prisma.IncidentUpdateManyWithoutCompanyNestedInput
   reportingPages?: Prisma.ReportingPageUpdateOneWithoutCompanyNestedInput
   users?: Prisma.UserUpdateManyWithoutCompanyNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutCategoriesInput = {
@@ -584,6 +623,7 @@ export type CompanyUncheckedUpdateWithoutCategoriesInput = {
   incidents?: Prisma.IncidentUncheckedUpdateManyWithoutCompanyNestedInput
   reportingPages?: Prisma.ReportingPageUncheckedUpdateOneWithoutCompanyNestedInput
   users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutReportingPagesInput = {
@@ -595,6 +635,7 @@ export type CompanyCreateWithoutReportingPagesInput = {
   categories?: Prisma.CategoryCreateNestedManyWithoutCompanyInput
   incidents?: Prisma.IncidentCreateNestedManyWithoutCompanyInput
   users?: Prisma.UserCreateNestedManyWithoutCompanyInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutReportingPagesInput = {
@@ -606,6 +647,7 @@ export type CompanyUncheckedCreateWithoutReportingPagesInput = {
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutCompanyInput
   incidents?: Prisma.IncidentUncheckedCreateNestedManyWithoutCompanyInput
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutReportingPagesInput = {
@@ -633,6 +675,7 @@ export type CompanyUpdateWithoutReportingPagesInput = {
   categories?: Prisma.CategoryUpdateManyWithoutCompanyNestedInput
   incidents?: Prisma.IncidentUpdateManyWithoutCompanyNestedInput
   users?: Prisma.UserUpdateManyWithoutCompanyNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutReportingPagesInput = {
@@ -643,6 +686,71 @@ export type CompanyUncheckedUpdateWithoutReportingPagesInput = {
   slaDays?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutCompanyNestedInput
   incidents?: Prisma.IncidentUncheckedUpdateManyWithoutCompanyNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyCreateWithoutAuditLogsInput = {
+  id?: string
+  name?: string | null
+  reportingLinkSlug?: string | null
+  createdAt?: Date | string
+  slaDays?: string | null
+  categories?: Prisma.CategoryCreateNestedManyWithoutCompanyInput
+  incidents?: Prisma.IncidentCreateNestedManyWithoutCompanyInput
+  reportingPages?: Prisma.ReportingPageCreateNestedOneWithoutCompanyInput
+  users?: Prisma.UserCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyUncheckedCreateWithoutAuditLogsInput = {
+  id?: string
+  name?: string | null
+  reportingLinkSlug?: string | null
+  createdAt?: Date | string
+  slaDays?: string | null
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutCompanyInput
+  incidents?: Prisma.IncidentUncheckedCreateNestedManyWithoutCompanyInput
+  reportingPages?: Prisma.ReportingPageUncheckedCreateNestedOneWithoutCompanyInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyCreateOrConnectWithoutAuditLogsInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutAuditLogsInput, Prisma.CompanyUncheckedCreateWithoutAuditLogsInput>
+}
+
+export type CompanyUpsertWithoutAuditLogsInput = {
+  update: Prisma.XOR<Prisma.CompanyUpdateWithoutAuditLogsInput, Prisma.CompanyUncheckedUpdateWithoutAuditLogsInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutAuditLogsInput, Prisma.CompanyUncheckedCreateWithoutAuditLogsInput>
+  where?: Prisma.CompanyWhereInput
+}
+
+export type CompanyUpdateToOneWithWhereWithoutAuditLogsInput = {
+  where?: Prisma.CompanyWhereInput
+  data: Prisma.XOR<Prisma.CompanyUpdateWithoutAuditLogsInput, Prisma.CompanyUncheckedUpdateWithoutAuditLogsInput>
+}
+
+export type CompanyUpdateWithoutAuditLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reportingLinkSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slaDays?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categories?: Prisma.CategoryUpdateManyWithoutCompanyNestedInput
+  incidents?: Prisma.IncidentUpdateManyWithoutCompanyNestedInput
+  reportingPages?: Prisma.ReportingPageUpdateOneWithoutCompanyNestedInput
+  users?: Prisma.UserUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyUncheckedUpdateWithoutAuditLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reportingLinkSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slaDays?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutCompanyNestedInput
+  incidents?: Prisma.IncidentUncheckedUpdateManyWithoutCompanyNestedInput
+  reportingPages?: Prisma.ReportingPageUncheckedUpdateOneWithoutCompanyNestedInput
   users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
@@ -655,12 +763,14 @@ export type CompanyCountOutputType = {
   categories: number
   incidents: number
   users: number
+  auditLogs: number
 }
 
 export type CompanyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   categories?: boolean | CompanyCountOutputTypeCountCategoriesArgs
   incidents?: boolean | CompanyCountOutputTypeCountIncidentsArgs
   users?: boolean | CompanyCountOutputTypeCountUsersArgs
+  auditLogs?: boolean | CompanyCountOutputTypeCountAuditLogsArgs
 }
 
 /**
@@ -694,6 +804,13 @@ export type CompanyCountOutputTypeCountUsersArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.UserWhereInput
 }
 
+/**
+ * CompanyCountOutputType without action
+ */
+export type CompanyCountOutputTypeCountAuditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AuditLogWhereInput
+}
+
 
 export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -705,6 +822,7 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   incidents?: boolean | Prisma.Company$incidentsArgs<ExtArgs>
   reportingPages?: boolean | Prisma.Company$reportingPagesArgs<ExtArgs>
   users?: boolean | Prisma.Company$usersArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.Company$auditLogsArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["company"]>
 
@@ -738,6 +856,7 @@ export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   incidents?: boolean | Prisma.Company$incidentsArgs<ExtArgs>
   reportingPages?: boolean | Prisma.Company$reportingPagesArgs<ExtArgs>
   users?: boolean | Prisma.Company$usersArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.Company$auditLogsArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CompanyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -750,6 +869,7 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     incidents: Prisma.$IncidentPayload<ExtArgs>[]
     reportingPages: Prisma.$ReportingPagePayload<ExtArgs> | null
     users: Prisma.$UserPayload<ExtArgs>[]
+    auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1155,6 +1275,7 @@ export interface Prisma__CompanyClient<T, Null = never, ExtArgs extends runtime.
   incidents<T extends Prisma.Company$incidentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$incidentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncidentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reportingPages<T extends Prisma.Company$reportingPagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$reportingPagesArgs<ExtArgs>>): Prisma.Prisma__ReportingPageClient<runtime.Types.Result.GetResult<Prisma.$ReportingPagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   users<T extends Prisma.Company$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  auditLogs<T extends Prisma.Company$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1670,6 +1791,30 @@ export type Company$usersArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.UserScalarFieldEnum | Prisma.UserScalarFieldEnum[]
+}
+
+/**
+ * Company.auditLogs
+ */
+export type Company$auditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AuditLog
+   */
+  select?: Prisma.AuditLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AuditLog
+   */
+  omit?: Prisma.AuditLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AuditLogInclude<ExtArgs> | null
+  where?: Prisma.AuditLogWhereInput
+  orderBy?: Prisma.AuditLogOrderByWithRelationInput | Prisma.AuditLogOrderByWithRelationInput[]
+  cursor?: Prisma.AuditLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AuditLogScalarFieldEnum | Prisma.AuditLogScalarFieldEnum[]
 }
 
 /**
