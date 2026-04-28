@@ -17,7 +17,8 @@ import {
     getIncidents
 } from '@/lib/helpers'
 
-import { getAccessToken } from "@/actions/auth";
+import { getCompanyAuditLogs } from "@/lib/helpers";
+import { AuditLog } from "@/components/audit-log";
 
 export default async function DashboardPage() {
 
@@ -25,7 +26,7 @@ export default async function DashboardPage() {
     const companyId = res.data!
 
     const total_incidents = await totalIncidents(companyId);
-    
+
     const total_open_incidents = await totalOpenIncidents(companyId);
     const SLA_compliance = await SLACompliance(companyId);
     const unassigned_incidents = await unassignedIncidents(companyId);
@@ -36,8 +37,10 @@ export default async function DashboardPage() {
     const slaTrend = await slaComplianceTrend(companyId);
     const resolutionTrend = await avgResolutionTimeTrend(companyId);
 
-    const incidents = await getIncidents(companyId, {limit: 15});
+    const incidents = await getIncidents(companyId, { limit: 15 });
     const chartData = await groupIncidentsByDate(incidents);
+
+    const auditLogs = await getCompanyAuditLogs(companyId, 15);
 
     return (
         <div>
@@ -69,7 +72,11 @@ export default async function DashboardPage() {
                         <div className="px-4 lg:px-6">
                             <ChartAreaInteractive chartData={chartData} />
                         </div>
-                        
+
+                        <div className="px-4 lg:px-6 mt-6">
+                            <AuditLog logs={auditLogs} />
+                        </div>
+
                     </div>
                 </div>
             </div>

@@ -548,3 +548,19 @@ export async function getReportingPage() {
 export function hashPassword(password: string) {
     return bcrypt.hash(password, 10);
 }
+
+export async function getCompanyAuditLogs(companyId: string, limit = 20) {
+  return await prisma.auditLog.findMany({
+    where: { companyId },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    include: {
+      user: {
+        select: { id: true, name: true, email: true },
+      },
+      incident: {
+        select: { id: true, incidentIdDisplay: true },
+      },
+    },
+  });
+}

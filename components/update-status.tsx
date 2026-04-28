@@ -89,7 +89,7 @@ export function UpdateStatusDialogue({
                             disabled={!selected}
                             onClick={handleUpdateStatus}
                         >
-                            {pending ? "Uodating..." : "Confirm"}
+                            {pending ? "Updating..." : "Confirm"}
                         </Button>
                     </div>
                 </div>
