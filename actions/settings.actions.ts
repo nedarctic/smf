@@ -1,13 +1,12 @@
-// actions/settings.actions.ts
 "use server";
 
 import { prisma } from "@/lib/prisma";
 import { getCompanyId } from "@/lib/helpers";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import bcrypt from "bcrypt";
 import { revalidatePath } from "next/cache";
 import { hashPassword } from "@/lib/helpers";
+import { logAuditAsync } from "@/lib/audit";
 
 export async function updateSettings({
   companyName,
@@ -23,7 +22,6 @@ export async function updateSettings({
   slaDays: number;
 }) {
   try {
-    // 1. Get session user
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
@@ -32,10 +30,25 @@ export async function updateSettings({
 
     const userId = session.user.id;
 
-    // 2. Get company
-    const companyId = await getCompanyId().then(res => res.data!);
+    const companyId = await getCompanyId().then((res) => res.data!);
 
-    // 3. Update company
+    // =========================
+    // Get previous values (for audit diff)
+    // =========================
+    const [previousCompany, previousUser] = await Promise.all([
+      prisma.company.findUnique({
+        where: { id: companyId },
+        select: { name: true, slaDays: true },
+      }),
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { name: true, email: true },
+      }),
+    ]);
+
+    // =========================
+    // UPDATE COMPANY
+    // =========================
     await prisma.company.update({
       where: { id: companyId },
       data: {
@@ -44,7 +57,28 @@ export async function updateSettings({
       },
     });
 
-    // 4. Update user (basic info)
+    logAuditAsync({
+      action: "UPDATE",
+      entityType: "COMPANY",
+      entityId: companyId,
+      companyId,
+      userId,
+      description: "Company settings updated",
+      metadata: {
+        name: {
+          from: previousCompany?.name,
+          to: companyName,
+        },
+        slaDays: {
+          from: previousCompany?.slaDays,
+          to: slaDays.toString(),
+        },
+      },
+    });
+
+    // =========================
+    // UPDATE USER
+    // =========================
     await prisma.user.update({
       where: { id: userId },
       data: {
@@ -53,7 +87,28 @@ export async function updateSettings({
       },
     });
 
-    // 5. Update password (only if provided)
+    logAuditAsync({
+      action: "UPDATE",
+      entityType: "USER",
+      entityId: userId,
+      userId,
+      companyId,
+      description: "User profile updated",
+      metadata: {
+        name: {
+          from: previousUser?.name,
+          to: name,
+        },
+        email: {
+          from: previousUser?.email,
+          to: email,
+        },
+      },
+    });
+
+    // =========================
+    // UPDATE PASSWORD (optional)
+    // =========================
     if (password && password.trim().length > 0) {
       const hashedPassword = await hashPassword(password);
 
@@ -63,19 +118,26 @@ export async function updateSettings({
           password: hashedPassword,
         },
       });
+
+      logAuditAsync({
+        action: "UPDATE",
+        entityType: "USER",
+        entityId: userId,
+        userId,
+        companyId,
+        description: "User password changed",
+        metadata: {
+          passwordChanged: true,
+        },
+      });
     }
 
-    // 6. Revalidate
     revalidatePath("/dashboard/settings");
 
     return { success: true };
-
   } catch (error) {
     return {
-      error:
-        error instanceof Error
-          ? error.message
-          : "Unknown error",
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }

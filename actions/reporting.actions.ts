@@ -3,10 +3,14 @@
 import { prisma } from "@/lib/prisma";
 import { getCompanyId } from "@/lib/helpers";
 import { revalidatePath } from "next/cache";
-
 import { Prisma } from "@/lib/generated/prisma/client";
-import { getAccessToken, getAuthTokens } from "@/actions/auth";
+import { getAccessToken } from "@/actions/auth";
+import { logAuditAsync } from "@/lib/audit";
 
+
+// =========================
+// REPORTING PAGE UPDATE
+// =========================
 export async function updateReportingPage({
   slug,
   title,
@@ -19,23 +23,28 @@ export async function updateReportingPage({
   policyUrl: string;
 }) {
   try {
-    const companyId = await getCompanyId().then(res => res.data!);
+    const companyId = await getCompanyId().then((res) => res.data!);
 
-    // validate the slug - should not contain slash
-    if (slug.includes('/')) {
-      return {error: "Slug should not contain a slash (/)"}
+    if (slug.includes("/")) {
+      return { error: "Slug should not contain a slash (/)" };
     }
 
-    // if slug exists return useful error
     const isSlugExists = await prisma.reportingPage.findUnique({
-      where: {reportingPageUrl: slug}
-    }).then(res => res?.reportingPageUrl);
+      where: { reportingPageUrl: slug },
+    }).then((res) => res?.reportingPageUrl);
 
     if (isSlugExists) {
-      return {error: "This reporting link is already in use by another company. Kindly choose another."}
+      return {
+        error:
+          "This reporting link is already in use by another company. Kindly choose another.",
+      };
     }
 
-    // Update slug
+    const previous = await prisma.company.findUnique({
+      where: { id: companyId },
+      select: { reportingLinkSlug: true },
+    });
+
     await prisma.company.update({
       where: { id: companyId },
       data: {
@@ -43,7 +52,6 @@ export async function updateReportingPage({
       },
     });
 
-    // Upsert reporting page
     await prisma.reportingPage.upsert({
       where: { companyId },
       update: {
@@ -61,55 +69,83 @@ export async function updateReportingPage({
       },
     });
 
+    // 🔥 AUDIT
+    logAuditAsync({
+      action: "UPDATE",
+      entityType: "REPORTING_PAGE",
+      entityId: companyId,
+      companyId,
+      description: "Reporting page updated",
+      metadata: {
+        slug: {
+          from: previous?.reportingLinkSlug,
+          to: slug,
+        },
+        title,
+        policyUrl,
+      },
+    });
+
     revalidatePath("/dashboard/reporting");
 
     return { success: true };
-
   } catch (error) {
-    // Handle unique constraint violations explicitly
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
     ) {
       return {
-        error: "This reporting link is already in use. Please choose another slug.",
+        error:
+          "This reporting link is already in use. Please choose another slug.",
       };
     }
 
     return {
-      error:
-        error instanceof Error
-          ? error.message
-          : "Unknown error",
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
 
+
+// =========================
+// CREATE CATEGORY
+// =========================
 export async function createCategory({
   name,
 }: {
   name: string;
 }) {
   try {
-    const companyId = await getCompanyId().then(res => res.data!);
+    const companyId = await getCompanyId().then((res) => res.data!);
 
-    // check if category already exists
     const categoryNames = await prisma.category.findMany({
-      where: {companyId: companyId}
-    }).then(res => res.map(cat => cat.categoryName))
+      where: { companyId },
+    }).then((res) => res.map((cat) => cat.categoryName));
 
-    const isCategoryNameExist = categoryNames.filter(cat => cat.toLowerCase() === name.toLowerCase());
-    
-    if(isCategoryNameExist.length) {
-      return {error: "Category name already exists"}
+    const exists = categoryNames.some(
+      (cat) => cat.toLowerCase() === name.toLowerCase()
+    );
+
+    if (exists) {
+      return { error: "Category name already exists" };
     }
 
-    // create new unique category name
-
-    await prisma.category.create({
+    const category = await prisma.category.create({
       data: {
         companyId,
         categoryName: name,
+      },
+    });
+
+    // 🔥 AUDIT
+    logAuditAsync({
+      action: "CREATE",
+      entityType: "CATEGORY",
+      entityId: category.id,
+      companyId,
+      description: "Category created",
+      metadata: {
+        name,
       },
     });
 
@@ -118,19 +154,17 @@ export async function createCategory({
     return { success: true };
   } catch (error) {
     return {
-      error:
-        error instanceof Error
-          ? error.message
-          : "Unknown error",
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
 
-export async function uploadLogo(file: File, companyId: string) {
-  console.log("Executing upload logo server action");
 
+// =========================
+// UPLOAD LOGO
+// =========================
+export async function uploadLogo(file: File, companyId: string) {
   const token = await getAccessToken();
-  console.log("Access token inside uploadLogo action:", token);
 
   if (!token) {
     throw new Error("No access token");
@@ -144,14 +178,14 @@ export async function uploadLogo(file: File, companyId: string) {
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`, // ✅ FIXED
+        Authorization: `Bearer ${token}`,
       },
       body: uploadForm,
     }
   );
 
   if (!res.ok) {
-    const errorText = await res.text(); // ✅ DEBUG
+    const errorText = await res.text();
     console.error("Upload failed:", res.status, errorText);
     throw new Error(`Upload failed: ${res.status}`);
   }
@@ -162,21 +196,34 @@ export async function uploadLogo(file: File, companyId: string) {
     where: { companyId },
   });
 
-  if (existing) {
-    await prisma.logo.update({
-      where: { companyId },
-      data: {
-        logoUrl: data.file,
-        downloadUrl: data.download_url,
-      },
-    });
-  } else {
-    await prisma.logo.create({
-      data: {
-        companyId,
-        logoUrl: data.file,
-        downloadUrl: data.download_url,
-      },
-    });
-  }
+  const logo = existing
+    ? await prisma.logo.update({
+        where: { companyId },
+        data: {
+          logoUrl: data.file,
+          downloadUrl: data.download_url,
+        },
+      })
+    : await prisma.logo.create({
+        data: {
+          companyId,
+          logoUrl: data.file,
+          downloadUrl: data.download_url,
+        },
+      });
+
+  // 🔥 AUDIT
+  logAuditAsync({
+    action: "UPLOAD_FILE",
+    entityType: "COMPANY",
+    entityId: companyId,
+    companyId,
+    description: "Company logo uploaded/updated",
+    metadata: {
+      fileName: file.name,
+      logoUrl: data.file,
+    },
+  });
+
+  return logo;
 }
